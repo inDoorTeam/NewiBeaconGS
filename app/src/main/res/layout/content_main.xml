@@ -12,6 +12,16 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="gs.ibeacon.fcu.slideswipe.MainActivity"
     tools:showIn="@layout/app_bar_main">
-    
 
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/welcome_text"
+        android:id="@+id/welcome"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="@color/textColor"
+        android:layout_marginTop="192dp" />
 </RelativeLayout>

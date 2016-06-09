@@ -1,4 +1,4 @@
-package gs.ibeacon.fcu.slideswipe;
+package gs.ibeacon.fcu.slideswipe.Log;
 
 import android.util.Log;
 
