@@ -10,6 +10,7 @@
     <string name="title_friend">找尋好友</string>
     <string name="title_item">找尋物品</string>
     <string name="title_cart">智慧跟隨</string>
+    <string name="login">登入</string>
     <string name="welcome_text">智慧導引系統，是您生活中的好幫手</string>
 
     <!-- TODO: Remove or change this placeholder text -->

@@ -1,11 +1,14 @@
 package gs.ibeacon.fcu.slideswipe;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -15,12 +18,16 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.EditText;
 import android.widget.TextView;
 
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
+import gs.ibeacon.fcu.slideswipe.Log.JSON.JSON;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -79,11 +86,37 @@ public class MainActivity extends AppCompatActivity
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
+        switch(id){
+            case R.id.login:
+                LayoutInflater factory = LayoutInflater.from(this);
+                final View view = factory.inflate(R.layout.login, null);
+                AlertDialog.Builder loginDialog = new AlertDialog.Builder(this);
+                //loginDialog.setTitle("Login");
+                loginDialog.setView(view);
+                loginDialog.setPositiveButton("Login", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
 
+                        JSONObject loginJSONObject = new JSONObject();
+                        EditText userEditText = (EditText) view.findViewById(R.id.usr_input);
+                        EditText pwdEditText = (EditText) view.findViewById(R.id.pwd_input);
+
+//                        try {
+//                            loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
+//                            loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
+//                        } catch (JSONException e) {
+//                            e.printStackTrace();
+//                        }
+//                       sendtoServer(loginJSONObject);
+
+                    }
+                });
+                loginDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                    }
+                });
+                loginDialog.show();
+                break;
+        }
         return super.onOptionsItemSelected(item);
     }
 
