@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+        <item
+            android:id="@+id/guide"
+            android:icon="@drawable/ic_guide"
+            android:title="@string/app_name" />
+        <item
+            android:id="@+id/friend"
+            android:icon="@drawable/ic_friend"
+            android:title="找尋好友" />
+        <item
+            android:id="@+id/item"
+            android:icon="@drawable/ic_item"
+            android:title="找尋物品" />
+        <item
+            android:id="@+id/cart"
+            android:icon="@drawable/ic_cart"
+            android:title="智慧跟隨" />
+    </group>
+
+    <item android:title="Communicate">
+        <menu>
+            <item
+                android:id="@+id/nav_share"
+                android:icon="@drawable/ic_cart"
+                android:title="Share" />
+            <item
+                android:id="@+id/nav_send"
+                android:icon="@drawable/ic_cart"
+                android:title="Send" />
+        </menu>
+    </item>
+
+</menu>

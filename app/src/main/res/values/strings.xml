@@ -1,0 +1,16 @@
+<resources>
+    <string name="app_name">智慧導引</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="action_settings">Settings</string>
+    <string name="user_id">user</string>
+    <string name="title_guide">區域導引</string>
+    <string name="title_friend">找尋好友</string>
+    <string name="title_item">找尋物品</string>
+    <string name="title_cart">智慧跟隨</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+</resources>

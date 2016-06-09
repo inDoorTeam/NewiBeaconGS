@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="toolbarU">#ffc74e</color>
+    <color name="toolbarD">#ef932a</color>
+    <color name="colorAccent">#ffac40</color>
+
+    <color name="textColor">#63ce5f</color>
+
+    <color name="startColor">#bdff5258</color>
+    <color name="centerColor">#ffc756</color>
+    <color name="endColor">#ccffff6f</color>
+</resources>
