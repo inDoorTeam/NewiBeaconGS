@@ -5,19 +5,19 @@
         <item
             android:id="@+id/guide"
             android:icon="@drawable/ic_guide"
-            android:title="@string/app_name" />
+            android:title="@string/title_guide" />
         <item
             android:id="@+id/friend"
             android:icon="@drawable/ic_friend"
-            android:title="找尋好友" />
+            android:title="@string/title_friend" />
         <item
             android:id="@+id/item"
             android:icon="@drawable/ic_item"
-            android:title="找尋物品" />
+            android:title="@string/title_item" />
         <item
             android:id="@+id/cart"
             android:icon="@drawable/ic_cart"
-            android:title="智慧跟隨" />
+            android:title="@string/title_cart" />
     </group>
 
     <item android:title="Communicate">
