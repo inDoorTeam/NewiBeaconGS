@@ -107,14 +107,19 @@ public class MainActivity extends AppCompatActivity
                         EditText userEditText = (EditText) view.findViewById(R.id.usr_input);
                         EditText pwdEditText = (EditText) view.findViewById(R.id.pwd_input);
 
-//                        try {
-//                            loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
-//                            loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//                       sendtoServer(loginJSONObject);
-
+                        try {
+                            loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
+                            loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                        serverHandler.sendtoServer(loginJSONObject);
+                        try {
+                            Thread.sleep(100);
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
+                        }
+                        snackMsg("登入" + (serverHandler.isLogin ? "成功" : "失敗"));
                     }
                 });
                 loginDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

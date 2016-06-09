@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
+import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
@@ -25,7 +26,7 @@ public class ServerHandler {
     public static Socket clientSocket = new Socket();
     DataOutputStream outToServer;
     DataInputStream sendFromServer;
-    private boolean isLogin = false;
+    protected static boolean isLogin = false;
     private String address = "192.168.43.122";
     private int port = 8766;
     private Handler mHandler;
@@ -44,20 +45,21 @@ public class ServerHandler {
                 clientSocket = new Socket(InetAddress.getByName(address), port);
                 outToServer = new DataOutputStream( clientSocket.getOutputStream() );
                 sendFromServer = new DataInputStream( clientSocket.getInputStream() );
-//                JSONObject receiveObject;
-//                if(!clientSocket.isInputShutdown()) {
-//                    String receiveMessage = sendFromServer.readUTF();
-//                    if(receiveMessage != null){
-//                        receiveObject = new JSONObject(receiveMessage);
-//                        isLogin = receiveObject.getBoolean(JSON.KEY_RESULT);
-//                        if(isLogin){
-//                            (new Thread(serverhandler)).start();
-//                        }
-//                        else{
-//                        }
-//                    }
-//
-//                }
+                JSONObject receiveObject;
+                if(!clientSocket.isInputShutdown()) {
+                    String receiveMessage = sendFromServer.readUTF();
+                    if(receiveMessage != null){
+                        receiveObject = new JSONObject(receiveMessage);
+                        isLogin = receiveObject.getBoolean(JSON.KEY_RESULT);
+                        DLog.d("LOGIN ? " + isLogin);
+                        if(isLogin){
+                            (new Thread(serverhandler)).start();
+                        }
+                        else{
+                        }
+                    }
+
+                }
             }
             catch (Exception e) {
                 e.printStackTrace();
@@ -67,6 +69,7 @@ public class ServerHandler {
     public Runnable serverhandler = new Runnable(){
         @Override
         public void run() {
+            DLog.d("serverhandlerRun");
             try {
                 while (true) {
                     final JSONObject receiveObject;
@@ -92,4 +95,13 @@ public class ServerHandler {
             }
         }
     };
+    public void sendtoServer(JSONObject sendtoServer){
+        if(clientSocket.isConnected()) {
+            try {
+                outToServer.writeUTF(sendtoServer.toString());
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+    }
 }
