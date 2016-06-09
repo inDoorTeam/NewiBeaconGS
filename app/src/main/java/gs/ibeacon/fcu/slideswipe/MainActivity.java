@@ -7,7 +7,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -21,22 +20,20 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
-import gs.ibeacon.fcu.slideswipe.Log.JSON.JSON;
+import gs.ibeacon.fcu.slideswipe.JSON.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private ServerHandler serverHandler;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d("ActivityOnCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
@@ -87,6 +84,16 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch(id){
+            case R.id.connect:
+                snackMsg("連線中...");
+                serverHandler = new ServerHandler();
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                snackMsg("連線" + (serverHandler.clientSocket.isConnected() ? "成功" : "失敗"));
+                break;
             case R.id.login:
                 LayoutInflater factory = LayoutInflater.from(this);
                 final View view = factory.inflate(R.layout.login, null);
@@ -156,5 +163,9 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    public void snackMsg(String msg){
+        Snackbar.make(findViewById(R.id.toolbar), msg, Snackbar.LENGTH_LONG)
+                .setAction("Action", null).show();
     }
 }

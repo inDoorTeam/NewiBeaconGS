@@ -1,4 +1,4 @@
-package gs.ibeacon.fcu.slideswipe.Log.JSON;
+package gs.ibeacon.fcu.slideswipe.JSON;
 
 /**
  * Created by bing on 2016/6/10.
