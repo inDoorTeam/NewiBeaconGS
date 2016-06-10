@@ -3,6 +3,7 @@ package gs.ibeacon.fcu.slideswipe;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -19,7 +20,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.json.JSONObject;
@@ -32,17 +35,22 @@ public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private ServerHandler serverHandler;
     private NavigationView navigationView;
+    private MenuItem imgitem = null;
+    public static BluetoothAdapter mBluetoothAdapter = null;
+    private Switch BtSwitch;
     @Override
-
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d("ActivityOnCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setIcon(R.mipmap.ic_launcher);
         actionBar.setTitle(Html.fromHtml("<font color='#00FFCC'>智慧導引</font>"));
+
+        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,6 +86,16 @@ public class MainActivity extends AppCompatActivity
         DLog.d("ActivityOnCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        MenuItem item = menu.findItem(R.id.myswitch);
+        imgitem = menu.findItem(R.id.bticon);
+        item.setActionView(R.layout.switch_of_bluetooth);
+        imgitem.setIcon(R.drawable.ic_bt);
+        BtSwitch = (Switch) menu.findItem(R.id.myswitch).getActionView().findViewById(R.id.switchofbt);
+        if(mBluetoothAdapter.isEnabled()) {
+            BtSwitch.setChecked(true);
+            imgitem.setIcon(R.drawable.ic_bt2);
+        }
+        BtSwitch.setOnCheckedChangeListener(new MyOnClickListener());
         return true;
     }
 
@@ -184,6 +202,30 @@ public class MainActivity extends AppCompatActivity
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);
         return true;
+    }
+    public class MyOnClickListener implements CompoundButton.OnCheckedChangeListener {
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+            if(isChecked) {
+                openBt();
+                imgitem.setIcon(R.drawable.ic_bt2);
+            }
+            else {
+                closeBT();
+                imgitem.setIcon(R.drawable.ic_bt);
+            }
+        }
+    }
+    public void openBt(){
+        mBluetoothAdapter.enable();
+        snackMsg("藍芽已開啟");
+    }
+    public void closeBT() {
+        if (mBluetoothAdapter!=null && mBluetoothAdapter.isEnabled()) {
+            //unregisterReceiver(mReceiver);
+            mBluetoothAdapter.disable();
+            snackMsg("藍芽已關閉");
+        }
+
     }
     public void snackMsg(String msg){
         Snackbar.make(findViewById(R.id.toolbar), msg, Snackbar.LENGTH_LONG)

@@ -11,5 +11,14 @@
         android:title="@string/login"
         android:orderInCategory="100"
         android:showAsAction="never" />
+    <item
+        android:id="@+id/bticon"
+        android:icon="@drawable/ic_bt2"
+        android:title="icon"
+        app:showAsAction="ifRoom"/>
 
+    <item
+        android:id="@+id/myswitch"
+        app:showAsAction="always"
+        android:title=""/>
 </menu>
