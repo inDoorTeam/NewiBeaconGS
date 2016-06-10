@@ -56,9 +56,7 @@ public class ServerHandler {
                             username = receiveObject.getString(JSON.KEY_USER_NAME);
                             (new Thread(serverhandler)).start();
                         }
-
                     }
-
                 }
             }
             catch (Exception e) {

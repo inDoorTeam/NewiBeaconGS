@@ -12,7 +12,16 @@
     <string name="title_cart">智慧跟隨</string>
     <string name="login">登入</string>
     <string name="connect_to_server">連線</string>
+    <string name="bluetooth">藍芽</string>
     <string name="welcome_text">　智慧導引系統。\n是您生活中的好幫手</string>
+
+    <string name="scanning">scanning for devices...</string>
+    <string name="select_device">select a device to connect</string>
+    <string name="none_paired">No devices have been paired</string>
+    <string name="none_found">No devices found</string>
+    <string name="title_paired_devices">Paired Devices</string>
+    <string name="title_other_devices">Other Available Devices</string>
+    <string name="button_scan">Scan for devices</string>
 
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>

@@ -5,6 +5,7 @@ import android.app.Fragment;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -36,7 +37,8 @@ public class MainActivity extends AppCompatActivity
     private ServerHandler serverHandler;
     private NavigationView navigationView;
     private MenuItem imgitem = null;
-    public static BluetoothAdapter mBluetoothAdapter = null;
+    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    public static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private Switch BtSwitch;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,13 +51,11 @@ public class MainActivity extends AppCompatActivity
         ActionBar actionBar = getSupportActionBar();
         actionBar.setIcon(R.mipmap.ic_launcher);
         actionBar.setTitle(Html.fromHtml("<font color='#00FFCC'>智慧導引</font>"));
-
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "I have no idea what to do.", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
             }
         });
@@ -120,6 +120,7 @@ public class MainActivity extends AppCompatActivity
                 snackMsg("連線" + (serverHandler.clientSocket.isConnected() ? "成功" : "失敗"));
                 break;
             case R.id.login:
+                snackMsg("登入以使用會員功能");
                 LayoutInflater factory = LayoutInflater.from(this);
                 final View view = factory.inflate(R.layout.login, null);
                 AlertDialog.Builder loginDialog = new AlertDialog.Builder(this);
@@ -138,22 +139,27 @@ public class MainActivity extends AppCompatActivity
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        if(serverHandler != null)
+                        if (serverHandler != null)
                             serverHandler.sendtoServer(loginJSONObject);
                         try {
                             Thread.sleep(400);
-                        } catch (InterruptedException e) {
+
+                        } catch (Exception e) {
                             e.printStackTrace();
+
                         }
-                        if(serverHandler.getLoginState()){
+                        if (serverHandler == null || !serverHandler.getLoginState()) {
+                            snackMsg("登入失敗");
+                        }
+                        else {
                             View v = navigationView.getHeaderView(0);
                             TextView userID = (TextView) v.findViewById(R.id.userID);
                             userID.setText("Hello, " + serverHandler.getUsername() + "!");
                             //View vv = findViewById(R.id.app_bar);
                             TextView helloText = (TextView) findViewById(R.id.welcome);
                             helloText.setText("Hello, " + serverHandler.getUsername() + "!");
+                            snackMsg("登入成功");
                         }
-                        snackMsg("登入" + (serverHandler.getLoginState() ? "成功" : "失敗"));
                     }
                 });
                 loginDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
@@ -161,6 +167,11 @@ public class MainActivity extends AppCompatActivity
                     }
                 });
                 loginDialog.show();
+                break;
+            case R.id.item_bluetooth:
+                snackMsg("選擇藍芽裝置");
+                Intent serverIntent = new Intent(this, DeviceListActivity.class);
+                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -206,26 +217,18 @@ public class MainActivity extends AppCompatActivity
     public class MyOnClickListener implements CompoundButton.OnCheckedChangeListener {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if(isChecked) {
-                openBt();
+                mBluetoothAdapter.enable();
+                snackMsg("藍芽已開啟");
                 imgitem.setIcon(R.drawable.ic_bt2);
             }
             else {
-                closeBT();
+                if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
+                    mBluetoothAdapter.disable();
+                    snackMsg("藍芽已關閉");
+                }
                 imgitem.setIcon(R.drawable.ic_bt);
             }
         }
-    }
-    public void openBt(){
-        mBluetoothAdapter.enable();
-        snackMsg("藍芽已開啟");
-    }
-    public void closeBT() {
-        if (mBluetoothAdapter!=null && mBluetoothAdapter.isEnabled()) {
-            //unregisterReceiver(mReceiver);
-            mBluetoothAdapter.disable();
-            snackMsg("藍芽已關閉");
-        }
-
     }
     public void snackMsg(String msg){
         Snackbar.make(findViewById(R.id.toolbar), msg, Snackbar.LENGTH_LONG)

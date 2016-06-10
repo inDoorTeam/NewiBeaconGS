@@ -2,6 +2,16 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
+        android:id="@+id/bticon"
+        android:icon="@drawable/ic_bt2"
+        android:title="icon"
+        app:showAsAction="ifRoom"/>
+
+    <item
+        android:id="@+id/myswitch"
+        app:showAsAction="always"
+        android:title=""/>
+    <item
         android:id="@+id/connect"
         android:title="@string/connect_to_server"
         android:orderInCategory="100"
@@ -12,13 +22,8 @@
         android:orderInCategory="100"
         android:showAsAction="never" />
     <item
-        android:id="@+id/bticon"
-        android:icon="@drawable/ic_bt2"
-        android:title="icon"
-        app:showAsAction="ifRoom"/>
-
-    <item
-        android:id="@+id/myswitch"
-        app:showAsAction="always"
-        android:title=""/>
+        android:id="@+id/item_bluetooth"
+        android:title="@string/bluetooth"
+        android:orderInCategory="100"
+        android:showAsAction="never" />
 </menu>
