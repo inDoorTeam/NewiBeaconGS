@@ -2,6 +2,7 @@ package gs.ibeacon.fcu.slideswipe;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
@@ -33,6 +34,7 @@ import gs.ibeacon.fcu.slideswipe.Fragment.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
 import gs.ibeacon.fcu.slideswipe.JSON.*;
 import gs.ibeacon.fcu.slideswipe.BlueTooth.*;
+import me.drakeet.materialdialog.MaterialDialog;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
@@ -127,50 +129,46 @@ public class MainActivity extends AppCompatActivity
             case R.id.login:
                 snackMsg("登入以使用會員功能");
                 LayoutInflater factory = LayoutInflater.from(this);
-                final View view = factory.inflate(R.layout.login, null);
-                AlertDialog.Builder loginDialog = new AlertDialog.Builder(this);
-                loginDialog.setView(view);
+                final View viewLogin = factory.inflate(R.layout.login, null);
+                final MaterialDialog loginDialog = new MaterialDialog(this);
+                loginDialog.setTitle("會員登入");
+                loginDialog.setContentView(viewLogin);
+                loginDialog.setPositiveButton("Login", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            snackMsg("登入中...");
+                            JSONObject loginJSONObject = new JSONObject();
+                            EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
+                            EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
 
-                loginDialog.setPositiveButton("Login", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        snackMsg("登入中...");
-                        JSONObject loginJSONObject = new JSONObject();
-                        EditText userEditText = (EditText) view.findViewById(R.id.usr_input);
-                        EditText pwdEditText = (EditText) view.findViewById(R.id.pwd_input);
-
-                        try {
-                            loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
-                            loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                            try {
+                                loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
+                                loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
+                                serverHandler.sendtoServer(loginJSONObject);
+                                Thread.sleep(400);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                            if (serverHandler == null || !serverHandler.getLoginState()) {
+                                snackMsg("登入失敗");
+                            }
+                            else {
+                                View vv = navigationView.getHeaderView(0);
+                                TextView userID = (TextView) vv.findViewById(R.id.userID);
+                                userID.setText("Hello, " + serverHandler.getUsername() + "!");
+                                TextView helloText = (TextView) findViewById(R.id.welcome);
+                                helloText.setText("Hello, " + serverHandler.getUsername() + "!");
+                                snackMsg("登入成功");
+                            }
+                            loginDialog.dismiss();
                         }
-                        if (serverHandler != null)
-                            serverHandler.sendtoServer(loginJSONObject);
-                        try {
-                            Thread.sleep(400);
-
-                        } catch (Exception e) {
-                            e.printStackTrace();
-
+                    })
+                    .setNegativeButton("CANCEL", new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            loginDialog.dismiss();
                         }
-                        if (serverHandler == null || !serverHandler.getLoginState()) {
-                            snackMsg("登入失敗");
-                        }
-                        else {
-                            View v = navigationView.getHeaderView(0);
-                            TextView userID = (TextView) v.findViewById(R.id.userID);
-                            userID.setText("Hello, " + serverHandler.getUsername() + "!");
-                            //View vv = findViewById(R.id.app_bar);
-                            TextView helloText = (TextView) findViewById(R.id.welcome);
-                            helloText.setText("Hello, " + serverHandler.getUsername() + "!");
-                            snackMsg("登入成功");
-                        }
-                    }
-                });
-                loginDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                    }
-                });
+                    });
                 loginDialog.show();
                 break;
             case R.id.item_bluetooth:
