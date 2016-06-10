@@ -7,6 +7,8 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
+import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.support.design.widget.NavigationView;
@@ -20,10 +22,6 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
-import com.dd.processbutton.FlatButton;
-import com.dd.processbutton.ProcessButton;
-import com.dd.processbutton.iml.ActionProcessButton;
-
 import org.json.JSONObject;
 
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
@@ -33,7 +31,6 @@ import gs.ibeacon.fcu.slideswipe.JSON.*;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private ServerHandler serverHandler;
-    private MenuItem loginItem;
     private NavigationView navigationView;
     @Override
 
@@ -43,6 +40,9 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+        actionBar.setIcon(R.mipmap.ic_launcher);
+        actionBar.setTitle(Html.fromHtml("<font color='#00FFCC'>智慧導引</font>"));
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -78,7 +78,6 @@ public class MainActivity extends AppCompatActivity
         DLog.d("ActivityOnCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        loginItem = menu.findItem(R.id.login);
         return true;
     }
 

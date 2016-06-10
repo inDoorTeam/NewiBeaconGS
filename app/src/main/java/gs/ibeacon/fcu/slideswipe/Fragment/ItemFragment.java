@@ -62,7 +62,7 @@ public class ItemFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.title_item);
+        toolbar.setSubtitle(R.string.title_item);
     }
 
     @Override

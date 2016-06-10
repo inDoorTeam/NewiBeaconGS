@@ -61,7 +61,7 @@ public class GuideFragment extends Fragment {
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
-        toolbar.setTitle(R.string.title_guide);
+        toolbar.setSubtitle(R.string.title_guide);
     }
 
     @Override
