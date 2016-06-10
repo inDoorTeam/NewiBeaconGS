@@ -24,22 +24,24 @@ import gs.ibeacon.fcu.slideswipe.Log.*;
  */
 public class ServerHandler {
     public static Socket clientSocket = new Socket();
-    DataOutputStream outToServer;
-    DataInputStream sendFromServer;
-    private boolean isLogin = false;
+    public static final String TAG = "ServerHandler";
+    private DataInputStream sendFromServer;
+    private DataOutputStream outToServer;
     private String username = null;
     private String address = "192.168.43.122";
-    private int port = 8766;
     private Handler mHandler = new Handler();
+    private boolean isLogin = false;
+    private int port = 8766;
+
     public ServerHandler(){
-        DLog.d("ServerHandlerCreate");
+        DLog.d(TAG, "ServerHandlerCreate");
         (new Thread(connecttoServer)).start();
     }
     public Runnable connecttoServer = new Runnable() {
 
         @Override
         public void run() {
-            DLog.d("connecttoServerRun");
+            DLog.d(TAG, "connecttoServerRun");
 
             try {
                 clientSocket = new Socket(InetAddress.getByName(address), port);
@@ -51,7 +53,7 @@ public class ServerHandler {
                     if(receiveMessage != null){
                         receiveObject = new JSONObject(receiveMessage);
                         isLogin = receiveObject.getBoolean(JSON.KEY_RESULT);
-                        DLog.d("LOGIN ? " + isLogin);
+                        DLog.d(TAG, "LOGIN ? " + isLogin);
                         if(isLogin){
                             username = receiveObject.getString(JSON.KEY_USER_NAME);
                             (new Thread(serverhandler)).start();
@@ -67,7 +69,7 @@ public class ServerHandler {
     public Runnable serverhandler = new Runnable(){
         @Override
         public void run() {
-            DLog.d("serverhandlerRun");
+            DLog.d(TAG, "serverhandlerRun");
             try {
                 while (true) {
                     final JSONObject receiveObject;

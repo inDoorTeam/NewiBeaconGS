@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
 import gs.ibeacon.fcu.slideswipe.*;
+import gs.ibeacon.fcu.slideswipe.Log.DLog;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -23,7 +24,7 @@ public class CartFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
-
+    public static final String TAG = "CartFragment";
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -55,12 +56,14 @@ public class CartFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        DLog.d(TAG, "onCreate");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.title_cart);
+        MainActivity.m.snackMsg(TAG);
     }
 
     @Override

@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.util.UUID;
 
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
+import gs.ibeacon.fcu.slideswipe.MainActivity;
 
 /**
  * Created by bing on 2016/6/10.
@@ -19,8 +20,7 @@ public class BluetoothService {
     public static BluetoothSocket btSocket = null;
     private static final UUID MY_UUID = UUID
             .fromString("00001101-0000-1000-8000-00805F9B34FB");
-    private static final UUID MY_UUID2 = UUID
-            .fromString("00001101-0000-1000-8000-00805F9B34FB");
+    private static final String TAG = "BluetoothService";
     private BluetoothAdapter mBluetoothAdapter = null;
     public BluetoothService() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
@@ -33,10 +33,10 @@ public class BluetoothService {
         try {
             btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
             btSocket.connect();
-            DLog.d("藍芽已連線");
+            DLog.d(TAG, "藍芽已連線");
         }
         catch (IOException e) {
-            DLog.d("藍芽socket建立失敗");
+            DLog.d(TAG, "藍芽socket建立失敗");
         }
 
     }
@@ -44,7 +44,7 @@ public class BluetoothService {
         try {
             outStream = btSocket.getOutputStream();
         } catch (IOException e) {
-            DLog.d("OutStream 取得失敗");
+            DLog.d(TAG, "OutStream 取得失敗");
         }
 
         byte[] msgBuffer = data.getBytes();
@@ -52,7 +52,7 @@ public class BluetoothService {
         try {
             outStream.write(msgBuffer);
         } catch (IOException e) {
-            DLog.d("藍芽訊息傳送失敗");
+            DLog.d(TAG, "藍芽訊息傳送失敗");
         }
     }
 

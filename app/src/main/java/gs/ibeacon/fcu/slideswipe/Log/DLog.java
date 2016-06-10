@@ -8,8 +8,8 @@ import android.util.Log;
 public class DLog {
     private static final String TAG = "iBeaconGS";
 
-    public static void d(String msg){
-        Log.d(TAG, ">>> " + msg);
+    public static void d(String classname, String msg){
+        Log.d(TAG, ">>> " + classname + " >>> " + msg);
     }
     public static void w(String msg){
         Log.w(TAG, ">>> " + msg);

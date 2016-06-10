@@ -43,13 +43,14 @@ public class MainActivity extends AppCompatActivity
     private MenuItem imgitem = null;
     private Switch BtSwitch;
     private BluetoothService bluetoothService;
-
+    public static MainActivity m;
+    public static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DLog.d("ActivityOnCreate");
+        DLog.d(TAG, "ActivityOnCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        m = this;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
@@ -76,7 +77,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DLog.d("ActivityOnBackPressed");
+        DLog.d(TAG, "ActivityOnBackPressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -87,7 +88,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        DLog.d("ActivityOnCreateOptionsMenu");
+        DLog.d(TAG, "ActivityOnCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
         MenuItem item = menu.findItem(R.id.myswitch);
@@ -105,7 +106,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        DLog.d("ActivityOnOptionsItemSelected");
+        DLog.d(TAG, "ActivityOnOptionsItemSelected");
 
         // Handle action bar item clicks here. The action bar will
         // automatically handle clicks on the Home/Up button, so long
@@ -185,7 +186,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        DLog.d("ActivityOnNavigationItemSelected");
+        DLog.d(TAG, "ActivityOnNavigationItemSelected");
         // Handle navigation view item clicks here.
         Fragment fragment = null;
         FragmentManager fragmentManager = getFragmentManager();
