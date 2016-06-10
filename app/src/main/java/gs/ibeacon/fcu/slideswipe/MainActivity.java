@@ -1,5 +1,6 @@
 package gs.ibeacon.fcu.slideswipe;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
@@ -31,15 +32,18 @@ import org.json.JSONObject;
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
 import gs.ibeacon.fcu.slideswipe.JSON.*;
+import gs.ibeacon.fcu.slideswipe.BlueTooth.*;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
+    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    public static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ServerHandler serverHandler;
     private NavigationView navigationView;
     private MenuItem imgitem = null;
-    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
-    public static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private Switch BtSwitch;
+    private BluetoothService bluetoothService;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d("ActivityOnCreate");
@@ -228,6 +232,25 @@ public class MainActivity extends AppCompatActivity
                 }
                 imgitem.setIcon(R.drawable.ic_bt);
             }
+        }
+    }
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        switch (requestCode) {
+            case REQUEST_CONNECT_DEVICE_SECURE:
+                if (resultCode == Activity.RESULT_OK) {
+                    String deviceName = data.getExtras()
+                            .getString(DeviceListActivity.EXTRA_DEVICE_NAME);
+                    snackMsg("連線到..." + deviceName);
+                    bluetoothService = new BluetoothService();
+                    bluetoothService.connectDevice(data);
+                    try {
+                        Thread.sleep(100);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    snackMsg("連線" + (bluetoothService.btSocket.isConnected()? "成功" : "失敗"));
+                }
+                break;
         }
     }
     public void snackMsg(String msg){

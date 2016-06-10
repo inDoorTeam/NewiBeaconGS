@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package gs.ibeacon.fcu.slideswipe;
+package gs.ibeacon.fcu.slideswipe.BlueTooth;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -35,6 +35,7 @@ import android.widget.TextView;
 import java.util.Set;
 
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
+import gs.ibeacon.fcu.slideswipe.R;
 
 /**
  * This Activity appears as a dialog. It lists any paired devices and
@@ -53,6 +54,7 @@ public class DeviceListActivity extends Activity {
      * Return Intent extra
      */
     public static String EXTRA_DEVICE_ADDRESS = "device_address";
+    public static String EXTRA_DEVICE_NAME = "device_info";
 
     /**
      * Member fields
@@ -177,6 +179,7 @@ public class DeviceListActivity extends Activity {
             // Create the result Intent and include the MAC address
             Intent intent = new Intent();
             intent.putExtra(EXTRA_DEVICE_ADDRESS, address);
+            intent.putExtra(EXTRA_DEVICE_NAME, info);
             // Set result and finish this Activity
             setResult(Activity.RESULT_OK, intent);
             finish();
