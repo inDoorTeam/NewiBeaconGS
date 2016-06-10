@@ -102,6 +102,7 @@ public class MainActivity extends AppCompatActivity
             BtSwitch.setChecked(true);
             imgitem.setIcon(R.drawable.ic_bt2);
         }
+
         BtSwitch.setOnCheckedChangeListener(new MyOnClickListener());
         return true;
     }
@@ -128,15 +129,17 @@ public class MainActivity extends AppCompatActivity
                 break;
             case R.id.login:
                 snackMsg("登入以使用會員功能");
-                LayoutInflater factory = LayoutInflater.from(this);
-                final View viewLogin = factory.inflate(R.layout.login, null);
+                final View viewLogin = LayoutInflater.from(this).inflate(R.layout.login, null);
                 final MaterialDialog loginDialog = new MaterialDialog(this);
-                loginDialog.setTitle("會員登入");
-                loginDialog.setContentView(viewLogin);
+                loginDialog.setTitle("用戶登入");
+
+                loginDialog.setContentView(viewLogin).setCanceledOnTouchOutside(true);
                 loginDialog.setPositiveButton("Login", new View.OnClickListener() {
+                        int i = 0;
                         @Override
                         public void onClick(View v) {
                             snackMsg("登入中...");
+                            DLog.d(TAG, v.getId()+"");
                             JSONObject loginJSONObject = new JSONObject();
                             EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
                             EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
@@ -149,6 +152,7 @@ public class MainActivity extends AppCompatActivity
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
+
                             if (serverHandler == null || !serverHandler.getLoginState()) {
                                 snackMsg("登入失敗");
                             }
@@ -168,8 +172,7 @@ public class MainActivity extends AppCompatActivity
                         public void onClick(View v) {
                             loginDialog.dismiss();
                         }
-                    });
-                loginDialog.show();
+                    }).show();
                 break;
             case R.id.item_bluetooth:
                 snackMsg("選擇藍芽裝置");
@@ -179,7 +182,6 @@ public class MainActivity extends AppCompatActivity
         }
         return super.onOptionsItemSelected(item);
     }
-
 
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
@@ -217,6 +219,8 @@ public class MainActivity extends AppCompatActivity
         drawer.closeDrawer(GravityCompat.START);
         return true;
     }
+
+
     public class MyOnClickListener implements CompoundButton.OnCheckedChangeListener {
         public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
             if(isChecked) {
