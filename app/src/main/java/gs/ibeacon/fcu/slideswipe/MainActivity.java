@@ -20,6 +20,10 @@ import android.view.MenuItem;
 import android.widget.EditText;
 import android.widget.TextView;
 
+import com.dd.processbutton.FlatButton;
+import com.dd.processbutton.ProcessButton;
+import com.dd.processbutton.iml.ActionProcessButton;
+
 import org.json.JSONObject;
 
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
@@ -29,7 +33,10 @@ import gs.ibeacon.fcu.slideswipe.JSON.*;
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
     private ServerHandler serverHandler;
+    private MenuItem loginItem;
+    private NavigationView navigationView;
     @Override
+
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d("ActivityOnCreate");
         super.onCreate(savedInstanceState);
@@ -51,7 +58,7 @@ public class MainActivity extends AppCompatActivity
         drawer.setDrawerListener(toggle);
         toggle.syncState();
 
-        NavigationView navigationView = (NavigationView) findViewById(R.id.nav_view);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
     }
 
@@ -71,6 +78,7 @@ public class MainActivity extends AppCompatActivity
         DLog.d("ActivityOnCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
+        loginItem = menu.findItem(R.id.login);
         return true;
     }
 
@@ -88,7 +96,7 @@ public class MainActivity extends AppCompatActivity
                 snackMsg("連線中...");
                 serverHandler = new ServerHandler();
                 try {
-                    Thread.sleep(100);
+                    Thread.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -98,11 +106,11 @@ public class MainActivity extends AppCompatActivity
                 LayoutInflater factory = LayoutInflater.from(this);
                 final View view = factory.inflate(R.layout.login, null);
                 AlertDialog.Builder loginDialog = new AlertDialog.Builder(this);
-                //loginDialog.setTitle("Login");
                 loginDialog.setView(view);
+
                 loginDialog.setPositiveButton("Login", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-
+                        snackMsg("登入中...");
                         JSONObject loginJSONObject = new JSONObject();
                         EditText userEditText = (EditText) view.findViewById(R.id.usr_input);
                         EditText pwdEditText = (EditText) view.findViewById(R.id.pwd_input);
@@ -113,13 +121,22 @@ public class MainActivity extends AppCompatActivity
                         } catch (Exception e) {
                             e.printStackTrace();
                         }
-                        serverHandler.sendtoServer(loginJSONObject);
+                        if(serverHandler != null)
+                            serverHandler.sendtoServer(loginJSONObject);
                         try {
-                            Thread.sleep(100);
+                            Thread.sleep(400);
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         }
-                        snackMsg("登入" + (serverHandler.isLogin ? "成功" : "失敗"));
+                        if(serverHandler.getLoginState()){
+                            View v = navigationView.getHeaderView(0);
+                            TextView userID = (TextView) v.findViewById(R.id.userID);
+                            userID.setText("Hello, " + serverHandler.getUsername() + "!");
+                            //View vv = findViewById(R.id.app_bar);
+                            TextView helloText = (TextView) findViewById(R.id.welcome);
+                            helloText.setText("Hello, " + serverHandler.getUsername() + "!");
+                        }
+                        snackMsg("登入" + (serverHandler.getLoginState() ? "成功" : "失敗"));
                     }
                 });
                 loginDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {

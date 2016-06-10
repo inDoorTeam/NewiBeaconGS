@@ -26,16 +26,16 @@ public class ServerHandler {
     public static Socket clientSocket = new Socket();
     DataOutputStream outToServer;
     DataInputStream sendFromServer;
-    protected static boolean isLogin = false;
+    private boolean isLogin = false;
+    private String username = null;
     private String address = "192.168.43.122";
     private int port = 8766;
-    private Handler mHandler;
+    private Handler mHandler = new Handler();
     public ServerHandler(){
         DLog.d("ServerHandlerCreate");
         (new Thread(connecttoServer)).start();
     }
     public Runnable connecttoServer = new Runnable() {
-
 
         @Override
         public void run() {
@@ -53,10 +53,10 @@ public class ServerHandler {
                         isLogin = receiveObject.getBoolean(JSON.KEY_RESULT);
                         DLog.d("LOGIN ? " + isLogin);
                         if(isLogin){
+                            username = receiveObject.getString(JSON.KEY_USER_NAME);
                             (new Thread(serverhandler)).start();
                         }
-                        else{
-                        }
+
                     }
 
                 }
@@ -103,5 +103,11 @@ public class ServerHandler {
                 e.printStackTrace();
             }
         }
+    }
+    public String getUsername(){
+        return username;
+    }
+    public boolean getLoginState(){
+        return isLogin;
     }
 }
