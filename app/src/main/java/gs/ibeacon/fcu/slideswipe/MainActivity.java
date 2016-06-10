@@ -23,6 +23,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -52,12 +53,16 @@ public class MainActivity extends AppCompatActivity
         DLog.d(TAG, "ActivityOnCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
         m = this;
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         ActionBar actionBar = getSupportActionBar();
         actionBar.setIcon(R.mipmap.ic_launcher);
+        getWindow().setStatusBarColor(getResources().getColor(R.color.toolbarU));
         actionBar.setTitle(Html.fromHtml("<font color='#00FFCC'>智慧導引</font>"));
+
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -134,7 +139,7 @@ public class MainActivity extends AppCompatActivity
                 loginDialog.setTitle("用戶登入");
 
                 loginDialog.setContentView(viewLogin).setCanceledOnTouchOutside(true);
-                loginDialog.setPositiveButton("Login", new View.OnClickListener() {
+                loginDialog.setPositiveButton("登入", new View.OnClickListener() {
                         int i = 0;
                         @Override
                         public void onClick(View v) {
@@ -167,7 +172,7 @@ public class MainActivity extends AppCompatActivity
                             loginDialog.dismiss();
                         }
                     })
-                    .setNegativeButton("CANCEL", new View.OnClickListener() {
+                    .setNegativeButton("取消", new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
                             loginDialog.dismiss();
