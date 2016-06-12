@@ -1,20 +1,12 @@
 package gs.ibeacon.fcu.slideswipe;
 
-import android.content.DialogInterface;
 import android.os.Handler;
-import android.util.Log;
-
-import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
-
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
-import java.util.ArrayList;
-import java.util.List;
 
 import gs.ibeacon.fcu.slideswipe.JSON.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
@@ -26,7 +18,7 @@ public class ServerHandler {
     public static Socket clientSocket = new Socket();
     public static final String TAG = "ServerHandler";
     private DataInputStream sendFromServer;
-    private DataOutputStream outToServer;
+    private DataOutputStream sendToServer;
     private String username = null;
     private String address = "192.168.43.122";
     private Handler mHandler = new Handler();
@@ -34,18 +26,16 @@ public class ServerHandler {
     private int port = 8766;
 
     public ServerHandler(){
-        DLog.d(TAG, "ServerHandlerCreate");
-        (new Thread(connecttoServer)).start();
+        DLog.d(TAG, "ServerHandler");
+        (new Thread(connectToServer)).start();
     }
-    public Runnable connecttoServer = new Runnable() {
-
+    public Runnable connectToServer = new Runnable() {
         @Override
         public void run() {
-            DLog.d(TAG, "connecttoServerRun");
-
+            DLog.d(TAG, "connectToServerRun");
             try {
                 clientSocket = new Socket(InetAddress.getByName(address), port);
-                outToServer = new DataOutputStream( clientSocket.getOutputStream() );
+                sendToServer = new DataOutputStream( clientSocket.getOutputStream() );
                 sendFromServer = new DataInputStream( clientSocket.getInputStream() );
                 JSONObject receiveObject;
                 if(!clientSocket.isInputShutdown()) {
@@ -57,7 +47,7 @@ public class ServerHandler {
                         DLog.d(TAG, "LOGIN ? " + isLogin);
                         if(isLogin){
                             username = receiveObject.getString(JSON.KEY_USER_NAME);
-                            (new Thread(serverhandler)).start();
+                            (new Thread(serverHandler)).start();
                         }
                     }
                 }
@@ -67,16 +57,15 @@ public class ServerHandler {
             }
         }
     };
-    public Runnable serverhandler = new Runnable(){
+    public Runnable serverHandler = new Runnable(){
         @Override
         public void run() {
-            DLog.d(TAG, "serverandlerRun");
+            DLog.d(TAG, "serverHandlerRun");
             try {
                 while (true) {
                     final JSONObject receiveObject;
                     if (clientSocket.isConnected()) {
-                        String receiveMessage = null;
-                        receiveMessage = sendFromServer.readUTF();
+                        String receiveMessage = sendFromServer.readUTF();
                         DLog.d(TAG, receiveMessage);
                         if (receiveMessage != null) {
                             receiveObject = new JSONObject(receiveMessage);
@@ -90,9 +79,7 @@ public class ServerHandler {
                                     break;
                                 case JSON.STATE_LOGOUT:
                                     isLogin = !receiveObject.getBoolean(JSON.KEY_RESULT);
-
                                     break;
-
                             }
                         }
                     }
@@ -102,10 +89,10 @@ public class ServerHandler {
             }
         }
     };
-    public void sendToServer(JSONObject sendtoServer){
+    public void sendToServer(JSONObject JSONToServer){
         if(clientSocket.isConnected()) {
             try {
-                outToServer.writeUTF(sendtoServer.toString());
+                sendToServer.writeUTF(JSONToServer.toString());
             } catch (IOException e) {
                 e.printStackTrace();
             }

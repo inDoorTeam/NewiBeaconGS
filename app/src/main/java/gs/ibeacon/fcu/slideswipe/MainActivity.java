@@ -1,11 +1,16 @@
 package gs.ibeacon.fcu.slideswipe;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.ProgressDialog;
+import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
@@ -20,13 +25,21 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.Switch;
 import android.widget.TextView;
 
-import org.json.JSONException;
+import com.sails.engine.LocationRegion;
+import com.sails.engine.SAILS;
+import com.sails.engine.SAILSMapView;
+import com.sails.engine.overlay.Marker;
+
 import org.json.JSONObject;
+
+import java.util.List;
 
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
@@ -49,13 +62,21 @@ public class MainActivity extends AppCompatActivity
     private Switch btSwitch;
     private TextView userID;
     private TextView helloText;
-
+    private FrameLayout mapLayout;
     public static MainActivity m;
-    final MaterialDialog loginDialog = new MaterialDialog(this);
-    final MaterialDialog logoutDialog = new MaterialDialog(this);
+    private MaterialDialog loginDialog;
+    private MaterialDialog logoutDialog;
+
+    private static SAILS mSails;
+    private static SAILSMapView mSailsMapView;
+    private Vibrator mVibrator;
+    private ProgressDialog msgLoading ;
+    private MaterialDialog msgLoadSuccess ;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DLog.d(TAG, "nCreate");
+        DLog.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -69,11 +90,20 @@ public class MainActivity extends AppCompatActivity
         actionBar.setTitle(Html.fromHtml("<font color='#00FFCC'>智慧導引</font>"));
 
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        assert fab != null;
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "I have no idea what to do.", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
+            public void onClick(View v) {
+                helloText.setVisibility(View.INVISIBLE);
+                msgLoading.setTitle("Loading Map");
+                msgLoading.setMessage("Waiting ...");
+                msgLoadSuccess.setPositiveButton("OK", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        msgLoadSuccess.dismiss();
+                    }
+                }).setCanceledOnTouchOutside(true).setTitle("Loading Map").setMessage("Load successfully");
+                mSailsMapView.post(loadMapRunnable);
             }
         });
 
@@ -86,10 +116,21 @@ public class MainActivity extends AppCompatActivity
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
 
-
-        View vv = navigationView.getHeaderView(0);
-        userID = (TextView) vv.findViewById(R.id.userID);
+        View headerView = navigationView.getHeaderView(0);
+        userID = (TextView) headerView.findViewById(R.id.userID);
         helloText = (TextView) findViewById(R.id.welcome);
+
+
+        mSails = new SAILS(this);
+        mSails.setMode(SAILS.BLE_GFP_IMU);
+        mSailsMapView = new SAILSMapView(this);
+//        ((FrameLayout) findViewById(R.id.SAILSMap)).addView(mSailsMapView);
+        mapLayout = (FrameLayout) findViewById(R.id.SAILSMap);
+        mapLayout.addView(mSailsMapView);
+        //mapLayout.setVisibility(View.INVISIBLE);
+        msgLoading = new ProgressDialog(this);
+        msgLoadSuccess = new MaterialDialog(this);
+        mVibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
     }
 
     @Override
@@ -114,11 +155,11 @@ public class MainActivity extends AppCompatActivity
 
         logItem = menu.findItem(R.id.item_login);
         connectItem = menu.findItem(R.id.item_conntoserver);
-        btSwitch = (Switch) menu.findItem(R.id.item_switch).getActionView().findViewById(R.id.switchofbt);
         if(mBluetoothAdapter.isEnabled()) {
             btSwitch.setChecked(true);
             imgItem.setIcon(R.drawable.ic_bt2);
         }
+        btSwitch = (Switch) menu.findItem(R.id.item_switch).getActionView().findViewById(R.id.switchofbt);
         btSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
@@ -137,9 +178,8 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         final View viewLogin = LayoutInflater.from(this).inflate(R.layout.login, null);
-
+        loginDialog = new MaterialDialog(this);
         loginDialog.setPositiveButton("登入", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -178,12 +218,13 @@ public class MainActivity extends AppCompatActivity
             }
         }).setContentView(viewLogin).setCanceledOnTouchOutside(true).setTitle("用戶登入");
 
+        logoutDialog = new MaterialDialog(this);
         logoutDialog.setPositiveButton("登出", new View.OnClickListener(){
-            JSONObject logoutJSONObject = new JSONObject();
             @Override
             public void onClick(View v) {
                 DLog.d(TAG, "登出中...");
                 snackMsg("登出中...");
+                JSONObject logoutJSONObject = new JSONObject();
                 try {
                     logoutJSONObject.put(JSON.KEY_STATE, JSON.STATE_LOGOUT);
                     serverHandler.sendToServer(logoutJSONObject);
@@ -203,7 +244,6 @@ public class MainActivity extends AppCompatActivity
                     snackMsg("登出失敗");
                 }
                 logoutDialog.dismiss();
-
             }
         }).setNegativeButton("取消", new View.OnClickListener() {
             @Override
@@ -232,7 +272,6 @@ public class MainActivity extends AppCompatActivity
                 snackMsg("連線" + (serverHandler.clientSocket.isConnected() ? "成功" : "失敗"));
                 break;
             case R.id.item_login:
-
                 if(serverHandler == null)
                     snackMsg("請先連線");
                 else if(!serverHandler.isLogin()) {
@@ -240,12 +279,12 @@ public class MainActivity extends AppCompatActivity
                     loginDialog.show();
                 }
                 else {
-                    snackMsg("登出會員");
+                    snackMsg("用戶登出");
                     logoutDialog.show();
                 }
                 break;
             case R.id.item_bluetooth:
-                snackMsg("選擇藍芽裝置");
+                snackMsg("連線到藍芽裝置");
                 startActivityForResult(new Intent(this, DeviceListActivity.class), REQUEST_CONNECT_DEVICE);
                 break;
         }
@@ -259,7 +298,7 @@ public class MainActivity extends AppCompatActivity
         // Handle navigation view item clicks here.
         Fragment fragment = null;
         FragmentManager fragmentManager = getFragmentManager();
-        ((TextView) findViewById(R.id.welcome)).setVisibility(View.INVISIBLE);
+        findViewById(R.id.welcome).setVisibility(View.INVISIBLE);
         int id = item.getItemId();
         switch (id) {
             case R.id.guide:
@@ -314,4 +353,61 @@ public class MainActivity extends AppCompatActivity
         Snackbar.make(findViewById(R.id.toolbar), msg, Snackbar.LENGTH_LONG)
                 .setAction("Action", null).show();
     }
+
+    public Runnable loadMapRunnable = new Runnable() {
+        @Override
+        public void run() {
+            msgLoading.show();
+            mSails.loadCloudBuilding("ad8538700fd94717bbeda154b2a1c584", "5705e42055cce32e10002a2d", new SAILS.OnFinishCallback() {
+                @Override
+                public void onSuccess(String response) {
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            msgLoading.dismiss();
+                            msgLoadSuccess.show();
+
+                            mSailsMapView.setSAILSEngine(mSails);
+                            mSailsMapView.setLocationMarker(R.drawable.circle, R.drawable.arrow, null, 35);
+                            mSailsMapView.setLocatorMarkerVisible(true);
+                            mSailsMapView.loadFloorMap(mSails.getFloorNameList().get(0));
+                            mSailsMapView.autoSetMapZoomAndView();
+
+
+                            mSailsMapView.setOnRegionLongClickListener(new SAILSMapView.OnRegionLongClickListener() {
+                                @Override
+                                public void onLongClick(List<LocationRegion> locationRegions) {
+                                    if (mSails.isLocationEngineStarted())
+                                        return;
+                                    mVibrator.vibrate(70);
+                                    mSailsMapView.getMarkerManager().clear();
+                                    mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+                                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                                }
+                            });
+
+                            mSailsMapView.setOnRegionClickListener(new SAILSMapView.OnRegionClickListener() {
+                                @Override
+                                public void onClick(List<LocationRegion> locationRegions) {
+                                    if (mSailsMapView.getRoutingManager().getStartRegion() != null) {
+                                        LocationRegion lr = locationRegions.get(0);
+                                        mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.map_destination)));
+                                        mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
+                                        mSailsMapView.getRoutingManager().setTargetRegion(lr);
+                                        mSailsMapView.getRoutingManager().enableHandler();
+                                    }
+                                }
+                            });
+                        }
+                    });
+
+                }
+
+                public void onFailed(String response) {
+                    msgLoadSuccess.setMessage("Load Failed");
+                    msgLoadSuccess.show();
+                }
+            });
+        }
+    };
 }

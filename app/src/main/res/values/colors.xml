@@ -11,4 +11,5 @@
     <color name="endColor">#ccffff6f</color>
     <color name="itemTextColor">#b91eb8ff</color>
     <color name="btDeviceListBg">#cc7beac0</color>
+    <color name="drawerIcon">#cc7beac0</color>
 </resources>

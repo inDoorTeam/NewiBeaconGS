@@ -12,7 +12,20 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="gs.ibeacon.fcu.slideswipe.MainActivity"
     tools:showIn="@layout/app_bar_main">
+    <FrameLayout
+        android:layout_width="match_parent"
+        android:layout_height="512dp"
+        android:layout_gravity="center"
+        android:id="@+id/SAILSMap">
 
+        <ImageView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/lockcenter"
+            android:layout_gravity="center"
+            android:contentDescription="t" />
+
+    </FrameLayout>
 
     <TextView
         android:layout_width="wrap_content"
@@ -30,4 +43,5 @@
         android:layout_alignParentRight="false"
         android:layout_alignParentBottom="false"
         android:layout_alignWithParentIfMissing="false" />
+
 </RelativeLayout>

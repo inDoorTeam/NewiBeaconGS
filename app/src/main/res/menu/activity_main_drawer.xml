@@ -20,7 +20,7 @@
             android:title="@string/title_cart" />
     </group>
 
-    <item android:title="Communicate">
+    <item android:title="↑分隔線">
         <menu>
             <item
                 android:id="@+id/nav_share"
