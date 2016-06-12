@@ -2,28 +2,28 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/bticon"
+        android:id="@+id/item_bticon"
         android:icon="@drawable/ic_bt2"
-        android:title="icon"
+        android:title="藍芽開關"
         app:showAsAction="ifRoom"/>
 
     <item
-        android:id="@+id/myswitch"
+        android:id="@+id/item_switch"
         app:showAsAction="always"
         android:title=""/>
     <item
-        android:id="@+id/connect"
+        android:id="@+id/item_conntoserver"
         android:title="@string/connect_to_server"
         android:orderInCategory="100"
-        android:showAsAction="never" />
+        app:showAsAction="never" />
     <item
-        android:id="@+id/login"
+        android:id="@+id/item_login"
         android:title="@string/login"
         android:orderInCategory="100"
-        android:showAsAction="never" />
+        app:showAsAction="never" />
     <item
         android:id="@+id/item_bluetooth"
         android:title="@string/bluetooth"
         android:orderInCategory="100"
-        android:showAsAction="never" />
+        app:showAsAction="never" />
 </menu>

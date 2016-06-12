@@ -1,12 +1,9 @@
 package gs.ibeacon.fcu.slideswipe;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.Dialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
 import android.bluetooth.BluetoothAdapter;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -23,7 +20,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.Window;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.Switch;
@@ -43,14 +39,15 @@ public class MainActivity extends AppCompatActivity
     public static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ServerHandler serverHandler;
     private NavigationView navigationView;
-    private MenuItem imgitem = null;
-    private Switch BtSwitch;
+    private MenuItem imgItem = null;
+    private Switch btSwitch;
     private BluetoothService bluetoothService;
     public static MainActivity m;
+    final MaterialDialog loginDialog = new MaterialDialog(this);
     public static final String TAG = "MainActivity";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        DLog.d(TAG, "ActivityOnCreate");
+        DLog.d(TAG, "nCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
@@ -84,7 +81,7 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public void onBackPressed() {
-        DLog.d(TAG, "ActivityOnBackPressed");
+        DLog.d(TAG, "onBackPressed");
         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         if (drawer.isDrawerOpen(GravityCompat.START)) {
             drawer.closeDrawer(GravityCompat.START);
@@ -95,34 +92,92 @@ public class MainActivity extends AppCompatActivity
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        DLog.d(TAG, "ActivityOnCreateOptionsMenu");
+        DLog.d(TAG, "onCreateOptionsMenu");
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.main, menu);
-        MenuItem item = menu.findItem(R.id.myswitch);
-        imgitem = menu.findItem(R.id.bticon);
-        item.setActionView(R.layout.switch_of_bluetooth);
-        imgitem.setIcon(R.drawable.ic_bt);
-        BtSwitch = (Switch) menu.findItem(R.id.myswitch).getActionView().findViewById(R.id.switchofbt);
-        if(mBluetoothAdapter.isEnabled()) {
-            BtSwitch.setChecked(true);
-            imgitem.setIcon(R.drawable.ic_bt2);
-        }
+        menu.findItem(R.id.item_switch).setActionView(R.layout.switch_of_bluetooth);
+        imgItem = menu.findItem(R.id.item_bticon);
+        imgItem.setIcon(R.drawable.ic_bt);
 
-        BtSwitch.setOnCheckedChangeListener(new MyOnClickListener());
+        btSwitch = (Switch) menu.findItem(R.id.item_switch).getActionView().findViewById(R.id.switchofbt);
+        if(mBluetoothAdapter.isEnabled()) {
+            btSwitch.setChecked(true);
+            imgItem.setIcon(R.drawable.ic_bt2);
+        }
+        btSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if(isChecked) {
+                    mBluetoothAdapter.enable();
+                    snackMsg("藍芽已開啟");
+                    imgItem.setIcon(R.drawable.ic_bt2);
+                }
+                else {
+                    if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
+                        mBluetoothAdapter.disable();
+                        snackMsg("藍芽已關閉");
+                    }
+                    imgItem.setIcon(R.drawable.ic_bt);
+                }
+            }
+        });
+
+
+        final View viewLogin = LayoutInflater.from(this).inflate(R.layout.login, null);
+
+        loginDialog.setPositiveButton("登入", new View.OnClickListener() {
+            int i = 0;
+            @Override
+            public void onClick(View v) {
+                DLog.d(TAG, "登入中...");
+                snackMsg("登入中...");
+                JSONObject loginJSONObject = new JSONObject();
+                EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
+                EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
+
+                try {
+                    loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
+                    loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
+                    serverHandler.sendtoServer(loginJSONObject);
+                    Thread.sleep(400);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+                if (serverHandler == null || !serverHandler.getLoginState()) {
+                    DLog.d(TAG, "登入失敗");
+                    snackMsg("登入失敗");
+                }
+                else {
+                    DLog.d(TAG, "登入成功");
+                    snackMsg("登入成功");
+                    View vv = navigationView.getHeaderView(0);
+                    TextView userID = (TextView) vv.findViewById(R.id.userID);
+                    userID.setText("Hello, " + serverHandler.getUsername() + "!");
+                    TextView helloText = (TextView) findViewById(R.id.welcome);
+                    helloText.setText(serverHandler.getUsername());
+                }
+                loginDialog.dismiss();
+            }
+        }).setNegativeButton("取消", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginDialog.dismiss();
+            }
+        }).setContentView(viewLogin).setCanceledOnTouchOutside(true).setTitle("用戶登入");
+
+
         return true;
     }
-
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         DLog.d(TAG, "ActivityOnOptionsItemSelected");
 
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
 
         switch(id){
-            case R.id.connect:
+            case R.id.item_conntoserver:
+                DLog.d(TAG, "連線至Server中...");
                 snackMsg("連線中...");
                 serverHandler = new ServerHandler();
                 try {
@@ -132,52 +187,9 @@ public class MainActivity extends AppCompatActivity
                 }
                 snackMsg("連線" + (serverHandler.clientSocket.isConnected() ? "成功" : "失敗"));
                 break;
-            case R.id.login:
+            case R.id.item_login:
                 snackMsg("登入以使用會員功能");
-                final View viewLogin = LayoutInflater.from(this).inflate(R.layout.login, null);
-                final MaterialDialog loginDialog = new MaterialDialog(this);
-                loginDialog.setTitle("用戶登入");
-
-                loginDialog.setContentView(viewLogin).setCanceledOnTouchOutside(true);
-                loginDialog.setPositiveButton("登入", new View.OnClickListener() {
-                        int i = 0;
-                        @Override
-                        public void onClick(View v) {
-                            snackMsg("登入中...");
-                            DLog.d(TAG, v.getId()+"");
-                            JSONObject loginJSONObject = new JSONObject();
-                            EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
-                            EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
-
-                            try {
-                                loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
-                                loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
-                                serverHandler.sendtoServer(loginJSONObject);
-                                Thread.sleep(400);
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-
-                            if (serverHandler == null || !serverHandler.getLoginState()) {
-                                snackMsg("登入失敗");
-                            }
-                            else {
-                                View vv = navigationView.getHeaderView(0);
-                                TextView userID = (TextView) vv.findViewById(R.id.userID);
-                                userID.setText("Hello, " + serverHandler.getUsername() + "!");
-                                TextView helloText = (TextView) findViewById(R.id.welcome);
-                                helloText.setText("Hello, " + serverHandler.getUsername() + "!");
-                                snackMsg("登入成功");
-                            }
-                            loginDialog.dismiss();
-                        }
-                    })
-                    .setNegativeButton("取消", new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            loginDialog.dismiss();
-                        }
-                    }).show();
+                loginDialog.show();
                 break;
             case R.id.item_bluetooth:
                 snackMsg("選擇藍芽裝置");
@@ -191,7 +203,7 @@ public class MainActivity extends AppCompatActivity
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        DLog.d(TAG, "ActivityOnNavigationItemSelected");
+        DLog.d(TAG, "onNavigationItemSelected");
         // Handle navigation view item clicks here.
         Fragment fragment = null;
         FragmentManager fragmentManager = getFragmentManager();
@@ -226,23 +238,8 @@ public class MainActivity extends AppCompatActivity
     }
 
 
-    public class MyOnClickListener implements CompoundButton.OnCheckedChangeListener {
-        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-            if(isChecked) {
-                mBluetoothAdapter.enable();
-                snackMsg("藍芽已開啟");
-                imgitem.setIcon(R.drawable.ic_bt2);
-            }
-            else {
-                if (mBluetoothAdapter != null && mBluetoothAdapter.isEnabled()) {
-                    mBluetoothAdapter.disable();
-                    snackMsg("藍芽已關閉");
-                }
-                imgitem.setIcon(R.drawable.ic_bt);
-            }
-        }
-    }
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        DLog.d(TAG, "onActivityResult");
         switch (requestCode) {
             case REQUEST_CONNECT_DEVICE_SECURE:
                 if (resultCode == Activity.RESULT_OK) {

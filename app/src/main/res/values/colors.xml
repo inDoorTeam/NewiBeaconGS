@@ -9,4 +9,5 @@
     <color name="startColor">#bdff5258</color>
     <color name="centerColor">#ffc756</color>
     <color name="endColor">#ccffff6f</color>
+    <color name="itemTextColor">#cc7beac0</color>
 </resources>

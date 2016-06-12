@@ -20,12 +20,13 @@ android {
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
+    compile fileTree(include: ['*.jar'], dir: 'libs')
     testCompile 'junit:junit:4.12'
     compile 'com.android.support:appcompat-v7:23.2.1'
     compile 'com.android.support:support-v4:23.2.1'
     compile 'com.android.support:design:23.2.1'
     compile 'org.altbeacon:android-beacon-library:2.+'
+    compile 'com.google.android.gms:play-services-appindexing:8.1.0'
     compile 'me.drakeet.materialdialog:library:1.3.1'
-
+    compile files('libs/SAILS_SDK_V1.73_Published.jar')
 }
