@@ -45,7 +45,11 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private MenuItem imgItem = null;
     private MenuItem logItem = null;
+    private MenuItem connectItem = null;
     private Switch btSwitch;
+    private TextView userID;
+    private TextView helloText;
+
     public static MainActivity m;
     final MaterialDialog loginDialog = new MaterialDialog(this);
     final MaterialDialog logoutDialog = new MaterialDialog(this);
@@ -81,6 +85,11 @@ public class MainActivity extends AppCompatActivity
 
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         navigationView.setNavigationItemSelectedListener(this);
+
+
+        View vv = navigationView.getHeaderView(0);
+        userID = (TextView) vv.findViewById(R.id.userID);
+        helloText = (TextView) findViewById(R.id.welcome);
     }
 
     @Override
@@ -104,7 +113,7 @@ public class MainActivity extends AppCompatActivity
         imgItem.setIcon(R.drawable.ic_bt);
 
         logItem = menu.findItem(R.id.item_login);
-
+        connectItem = menu.findItem(R.id.item_conntoserver);
         btSwitch = (Switch) menu.findItem(R.id.item_switch).getActionView().findViewById(R.id.switchofbt);
         if(mBluetoothAdapter.isEnabled()) {
             btSwitch.setChecked(true);
@@ -155,12 +164,10 @@ public class MainActivity extends AppCompatActivity
                 } else {
                     DLog.d(TAG, "登入成功");
                     snackMsg("登入成功");
-                    View vv = navigationView.getHeaderView(0);
-                    TextView userID = (TextView) vv.findViewById(R.id.userID);
                     userID.setText(serverHandler.getUsername());
-                    TextView helloText = (TextView) findViewById(R.id.welcome);
                     helloText.setText("Hello, " + serverHandler.getUsername() + "!");
                     logItem.setTitle("登出");
+                    connectItem.setVisible(false);
                 }
                 loginDialog.dismiss();
             }
@@ -187,7 +194,10 @@ public class MainActivity extends AppCompatActivity
                 if(!serverHandler.isLogin()){
                     DLog.d(TAG, "登出成功");
                     snackMsg("登出成功");
+                    userID.setText(R.string.not_login);
+                    helloText.setText(R.string.welcome_text);
                     logItem.setTitle("登入");
+                    connectItem.setVisible(true);
                 }else{
                     DLog.d(TAG, "登出失敗");
                     snackMsg("登出失敗");
