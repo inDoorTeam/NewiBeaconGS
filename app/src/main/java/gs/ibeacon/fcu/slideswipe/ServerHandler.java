@@ -50,6 +50,7 @@ public class ServerHandler {
                 JSONObject receiveObject;
                 if(!clientSocket.isInputShutdown()) {
                     String receiveMessage = sendFromServer.readUTF();
+                    DLog.d(TAG, receiveMessage);
                     if(receiveMessage != null){
                         receiveObject = new JSONObject(receiveMessage);
                         isLogin = receiveObject.getBoolean(JSON.KEY_RESULT);
@@ -69,13 +70,14 @@ public class ServerHandler {
     public Runnable serverhandler = new Runnable(){
         @Override
         public void run() {
-            DLog.d(TAG, "serverhandlerRun");
+            DLog.d(TAG, "serverandlerRun");
             try {
                 while (true) {
                     final JSONObject receiveObject;
                     if (clientSocket.isConnected()) {
                         String receiveMessage = null;
                         receiveMessage = sendFromServer.readUTF();
+                        DLog.d(TAG, receiveMessage);
                         if (receiveMessage != null) {
                             receiveObject = new JSONObject(receiveMessage);
                             int state = receiveObject.getInt(JSON.KEY_STATE);
@@ -85,6 +87,11 @@ public class ServerHandler {
                                     System.out.println("You are :" + name);
                                     break;
                                 case JSON.STATE_FIND_FRIEND:
+                                    break;
+                                case JSON.STATE_LOGOUT:
+                                    isLogin = !receiveObject.getBoolean(JSON.KEY_RESULT);
+
+                                    break;
 
                             }
                         }
@@ -95,7 +102,7 @@ public class ServerHandler {
             }
         }
     };
-    public void sendtoServer(JSONObject sendtoServer){
+    public void sendToServer(JSONObject sendtoServer){
         if(clientSocket.isConnected()) {
             try {
                 outToServer.writeUTF(sendtoServer.toString());
@@ -104,10 +111,10 @@ public class ServerHandler {
             }
         }
     }
+    public boolean isLogin(){
+        return isLogin;
+    }
     public String getUsername(){
         return username;
-    }
-    public boolean getLoginState(){
-        return isLogin;
     }
 }

@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="toolbarU">#eab440</color>
+    <color name="toolbarU">#d6ef932a</color>
     <color name="toolbarD">#ef932a</color>
-    <color name="colorAccent">#ffac40</color>
+    <color name="colorAccent">#00ff3c</color>
 
     <color name="textColor">#2ba7ff</color>
 
     <color name="startColor">#bdff5258</color>
     <color name="centerColor">#ffc756</color>
     <color name="endColor">#ccffff6f</color>
-    <color name="itemTextColor">#cc7beac0</color>
+    <color name="itemTextColor">#b91eb8ff</color>
+    <color name="btDeviceListBg">#cc7beac0</color>
 </resources>

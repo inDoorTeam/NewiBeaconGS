@@ -25,6 +25,7 @@ import android.widget.EditText;
 import android.widget.Switch;
 import android.widget.TextView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
@@ -35,16 +36,19 @@ import me.drakeet.materialdialog.MaterialDialog;
 
 public class MainActivity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener {
-    private static final int REQUEST_CONNECT_DEVICE_SECURE = 1;
+    private static final int REQUEST_CONNECT_DEVICE = 1;
+    public static final String TAG = "MainActivity";
     public static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ServerHandler serverHandler;
+    private BluetoothService bluetoothService;
+
     private NavigationView navigationView;
     private MenuItem imgItem = null;
+    private MenuItem logItem = null;
     private Switch btSwitch;
-    private BluetoothService bluetoothService;
     public static MainActivity m;
     final MaterialDialog loginDialog = new MaterialDialog(this);
-    public static final String TAG = "MainActivity";
+    final MaterialDialog logoutDialog = new MaterialDialog(this);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d(TAG, "nCreate");
@@ -99,6 +103,8 @@ public class MainActivity extends AppCompatActivity
         imgItem = menu.findItem(R.id.item_bticon);
         imgItem.setIcon(R.drawable.ic_bt);
 
+        logItem = menu.findItem(R.id.item_login);
+
         btSwitch = (Switch) menu.findItem(R.id.item_switch).getActionView().findViewById(R.id.switchofbt);
         if(mBluetoothAdapter.isEnabled()) {
             btSwitch.setChecked(true);
@@ -126,7 +132,6 @@ public class MainActivity extends AppCompatActivity
         final View viewLogin = LayoutInflater.from(this).inflate(R.layout.login, null);
 
         loginDialog.setPositiveButton("登入", new View.OnClickListener() {
-            int i = 0;
             @Override
             public void onClick(View v) {
                 DLog.d(TAG, "登入中...");
@@ -138,24 +143,24 @@ public class MainActivity extends AppCompatActivity
                 try {
                     loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
                     loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
-                    serverHandler.sendtoServer(loginJSONObject);
+                    serverHandler.sendToServer(loginJSONObject);
                     Thread.sleep(400);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
-                if (serverHandler == null || !serverHandler.getLoginState()) {
+                if (serverHandler == null || !serverHandler.isLogin()) {
                     DLog.d(TAG, "登入失敗");
                     snackMsg("登入失敗");
-                }
-                else {
+                } else {
                     DLog.d(TAG, "登入成功");
                     snackMsg("登入成功");
                     View vv = navigationView.getHeaderView(0);
                     TextView userID = (TextView) vv.findViewById(R.id.userID);
-                    userID.setText("Hello, " + serverHandler.getUsername() + "!");
+                    userID.setText(serverHandler.getUsername());
                     TextView helloText = (TextView) findViewById(R.id.welcome);
-                    helloText.setText(serverHandler.getUsername());
+                    helloText.setText("Hello, " + serverHandler.getUsername() + "!");
+                    logItem.setTitle("登出");
                 }
                 loginDialog.dismiss();
             }
@@ -166,7 +171,36 @@ public class MainActivity extends AppCompatActivity
             }
         }).setContentView(viewLogin).setCanceledOnTouchOutside(true).setTitle("用戶登入");
 
+        logoutDialog.setPositiveButton("登出", new View.OnClickListener(){
+            JSONObject logoutJSONObject = new JSONObject();
+            @Override
+            public void onClick(View v) {
+                DLog.d(TAG, "登出中...");
+                snackMsg("登出中...");
+                try {
+                    logoutJSONObject.put(JSON.KEY_STATE, JSON.STATE_LOGOUT);
+                    serverHandler.sendToServer(logoutJSONObject);
+                    Thread.sleep(400);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                if(!serverHandler.isLogin()){
+                    DLog.d(TAG, "登出成功");
+                    snackMsg("登出成功");
+                    logItem.setTitle("登入");
+                }else{
+                    DLog.d(TAG, "登出失敗");
+                    snackMsg("登出失敗");
+                }
+                logoutDialog.dismiss();
 
+            }
+        }).setNegativeButton("取消", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                logoutDialog.dismiss();
+            }
+        }).setCanceledOnTouchOutside(true).setTitle("確定登出？");
         return true;
     }
     @Override
@@ -188,13 +222,21 @@ public class MainActivity extends AppCompatActivity
                 snackMsg("連線" + (serverHandler.clientSocket.isConnected() ? "成功" : "失敗"));
                 break;
             case R.id.item_login:
-                snackMsg("登入以使用會員功能");
-                loginDialog.show();
+
+                if(serverHandler == null)
+                    snackMsg("請先連線");
+                else if(!serverHandler.isLogin()) {
+                    snackMsg("登入以使用會員功能");
+                    loginDialog.show();
+                }
+                else {
+                    snackMsg("登出會員");
+                    logoutDialog.show();
+                }
                 break;
             case R.id.item_bluetooth:
                 snackMsg("選擇藍芽裝置");
-                Intent serverIntent = new Intent(this, DeviceListActivity.class);
-                startActivityForResult(serverIntent, REQUEST_CONNECT_DEVICE_SECURE);
+                startActivityForResult(new Intent(this, DeviceListActivity.class), REQUEST_CONNECT_DEVICE);
                 break;
         }
         return super.onOptionsItemSelected(item);
@@ -241,7 +283,7 @@ public class MainActivity extends AppCompatActivity
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         DLog.d(TAG, "onActivityResult");
         switch (requestCode) {
-            case REQUEST_CONNECT_DEVICE_SECURE:
+            case REQUEST_CONNECT_DEVICE:
                 if (resultCode == Activity.RESULT_OK) {
                     String deviceName = data.getExtras()
                             .getString(DeviceListActivity.EXTRA_DEVICE_NAME);
@@ -253,7 +295,7 @@ public class MainActivity extends AppCompatActivity
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }
-                    snackMsg("連線" + (bluetoothService.btSocket.isConnected()? "成功" : "失敗"));
+                    snackMsg("連線" + (bluetoothService.isConnected()? "成功" : "失敗"));
                 }
                 break;
         }

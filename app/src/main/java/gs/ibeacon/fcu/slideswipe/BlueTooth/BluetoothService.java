@@ -17,7 +17,7 @@ import gs.ibeacon.fcu.slideswipe.MainActivity;
  */
 public class BluetoothService {
     private OutputStream outStream = null;
-    public static BluetoothSocket btSocket = null;
+    private BluetoothSocket btSocket = null;
     private static final UUID MY_UUID = UUID
             .fromString("00001101-0000-1000-8000-00805F9B34FB");
     private static final String TAG = "BluetoothService";
@@ -54,6 +54,9 @@ public class BluetoothService {
         } catch (IOException e) {
             DLog.d(TAG, "藍芽訊息傳送失敗");
         }
+    }
+    public boolean isConnected(){
+        return btSocket.isConnected();
     }
 
 }
