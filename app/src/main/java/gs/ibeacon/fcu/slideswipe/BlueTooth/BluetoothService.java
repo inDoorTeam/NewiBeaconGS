@@ -25,7 +25,12 @@ public class BluetoothService {
     public BluetoothService() {
         mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     }
-
+    private static BluetoothService bluetoothService = null;
+    public static BluetoothService getInstance(){
+        if(bluetoothService == null)
+            bluetoothService = new BluetoothService();
+        return bluetoothService;
+    }
     public void connectDevice(Intent data) {
         String address = data.getExtras()
                 .getString(DeviceListActivity.EXTRA_DEVICE_ADDRESS);
@@ -56,7 +61,12 @@ public class BluetoothService {
         }
     }
     public boolean isConnected(){
-        return btSocket.isConnected();
+        try {
+            return btSocket.isConnected();
+        }
+        catch (Exception e){
+            return false;
+        }
     }
 
 }

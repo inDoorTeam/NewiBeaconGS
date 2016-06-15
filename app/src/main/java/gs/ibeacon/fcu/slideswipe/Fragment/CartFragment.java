@@ -8,7 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
+import android.widget.Button;
+
 import gs.ibeacon.fcu.slideswipe.*;
+import gs.ibeacon.fcu.slideswipe.BlueTooth.BluetoothService;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
 
 /**
@@ -19,7 +22,7 @@ import gs.ibeacon.fcu.slideswipe.Log.DLog;
  * Use the {@link CartFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class CartFragment extends Fragment {
+public class CartFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
     private static final String ARG_PARAM1 = "param1";
@@ -31,6 +34,13 @@ public class CartFragment extends Fragment {
 
     private OnFragmentInteractionListener mListener;
 
+
+    private Button leftButton = null;
+    private Button rightButton = null;
+    private Button forwardButton = null;
+    private Button backwardutton = null;
+    private Button stopButton = null;
+    private BluetoothService bluetoothService;
     public CartFragment() {
         // Required empty public constructor
     }
@@ -63,16 +73,33 @@ public class CartFragment extends Fragment {
         }
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.title_cart);
-        MainActivity.m.snackMsg(TAG);
+        MainActivity.mainActivity.snackMsg(TAG);
+        bluetoothService = BluetoothService.getInstance();
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_cart, container, false);
-    }
+        DLog.d(TAG, "onCreateView");
 
+        View v = inflater.inflate(R.layout.fragment_cart, container, false);
+
+        rightButton = (Button) v.findViewById(R.id.btnR);
+        leftButton = (Button) v.findViewById(R.id.btnL);
+        forwardButton = (Button) v.findViewById(R.id.btnU);
+        backwardutton = (Button) v.findViewById(R.id.btnD);
+        stopButton = (Button) v.findViewById(R.id.btnS);
+
+        rightButton.setOnClickListener(this);
+        leftButton.setOnClickListener(this);
+        forwardButton.setOnClickListener(this);
+        backwardutton.setOnClickListener(this);
+        stopButton.setOnClickListener(this);
+
+
+        return v;
+    }
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {
         if (mListener != null) {
@@ -95,6 +122,30 @@ public class CartFragment extends Fragment {
     public void onDetach() {
         super.onDetach();
         mListener = null;
+    }
+
+    @Override
+    public void onClick(View v) {
+        if(!bluetoothService.isConnected())
+            return;
+        int id = v.getId();
+        switch(id){
+            case R.id.btnU:
+                bluetoothService.writeData("u");
+                break;
+            case R.id.btnD:
+                bluetoothService.writeData("d");
+                break;
+            case R.id.btnL:
+                bluetoothService.writeData("l");
+                break;
+            case R.id.btnR:
+                bluetoothService.writeData("r");
+                break;
+            case R.id.btnS:
+                bluetoothService.writeData("s");
+                break;
+        }
     }
 
     /**

@@ -58,12 +58,11 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private MenuItem imgItem = null;
     private MenuItem logItem = null;
-    private MenuItem connectItem = null;
     private Switch btSwitch;
     private TextView userID;
     private TextView helloText;
     private FrameLayout mapLayout;
-    public static MainActivity m;
+    public static MainActivity mainActivity;
     private MaterialDialog loginDialog;
     private MaterialDialog logoutDialog;
 
@@ -73,14 +72,13 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog msgLoading ;
     private MaterialDialog msgLoadSuccess ;
 
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d(TAG, "onCreate");
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        m = this;
+        mainActivity = this;
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -154,11 +152,6 @@ public class MainActivity extends AppCompatActivity
         imgItem.setIcon(R.drawable.ic_bt);
 
         logItem = menu.findItem(R.id.item_login);
-        connectItem = menu.findItem(R.id.item_conntoserver);
-        if(mBluetoothAdapter.isEnabled()) {
-            btSwitch.setChecked(true);
-            imgItem.setIcon(R.drawable.ic_bt2);
-        }
         btSwitch = (Switch) menu.findItem(R.id.item_switch).getActionView().findViewById(R.id.switchofbt);
         btSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -177,6 +170,10 @@ public class MainActivity extends AppCompatActivity
                 }
             }
         });
+        if(mBluetoothAdapter.isEnabled()) {
+            btSwitch.setChecked(true);
+            imgItem.setIcon(R.drawable.ic_bt2);
+        }
 
         final View viewLogin = LayoutInflater.from(this).inflate(R.layout.login, null);
         loginDialog = new MaterialDialog(this);
@@ -185,10 +182,13 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 DLog.d(TAG, "登入中...");
                 snackMsg("登入中...");
+                if(!serverHandler.isConnected()) {
+                    snackMsg("無法連線至Server");
+                    return;
+                }
                 JSONObject loginJSONObject = new JSONObject();
                 EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
                 EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
-
                 try {
                     loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
                     loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
@@ -198,7 +198,7 @@ public class MainActivity extends AppCompatActivity
                     e.printStackTrace();
                 }
 
-                if (serverHandler == null || !serverHandler.isLogin()) {
+                if (!serverHandler.isLogin()) {
                     DLog.d(TAG, "登入失敗");
                     snackMsg("登入失敗");
                 } else {
@@ -207,7 +207,6 @@ public class MainActivity extends AppCompatActivity
                     userID.setText(serverHandler.getUsername());
                     helloText.setText("Hello, " + serverHandler.getUsername() + "!");
                     logItem.setTitle("登出");
-                    connectItem.setVisible(false);
                 }
                 loginDialog.dismiss();
             }
@@ -238,7 +237,6 @@ public class MainActivity extends AppCompatActivity
                     userID.setText(R.string.not_login);
                     helloText.setText(R.string.welcome_text);
                     logItem.setTitle("登入");
-                    connectItem.setVisible(true);
                 }else{
                     DLog.d(TAG, "登出失敗");
                     snackMsg("登出失敗");
@@ -260,21 +258,18 @@ public class MainActivity extends AppCompatActivity
         int id = item.getItemId();
 
         switch(id){
-            case R.id.item_conntoserver:
-                DLog.d(TAG, "連線至Server中...");
+            case R.id.item_login:
+
                 snackMsg("連線中...");
-                serverHandler = new ServerHandler();
+                serverHandler = ServerHandler.getInstance();
                 try {
                     Thread.sleep(300);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
                 snackMsg("連線" + (serverHandler.clientSocket.isConnected() ? "成功" : "失敗"));
-                break;
-            case R.id.item_login:
-                if(serverHandler == null)
-                    snackMsg("請先連線");
-                else if(!serverHandler.isLogin()) {
+
+                if(!serverHandler.isLogin()) {
                     snackMsg("登入以使用會員功能");
                     loginDialog.show();
                 }
@@ -337,7 +332,7 @@ public class MainActivity extends AppCompatActivity
                     String deviceName = data.getExtras()
                             .getString(DeviceListActivity.EXTRA_DEVICE_NAME);
                     snackMsg("連線到..." + deviceName);
-                    bluetoothService = new BluetoothService();
+                    bluetoothService = BluetoothService.getInstance();
                     bluetoothService.connectDevice(data);
                     try {
                         Thread.sleep(100);

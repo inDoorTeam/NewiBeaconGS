@@ -11,11 +11,11 @@
         android:id="@+id/item_switch"
         app:showAsAction="always"
         android:title=""/>
-    <item
-        android:id="@+id/item_conntoserver"
-        android:title="@string/connect_to_server"
-        android:orderInCategory="100"
-        app:showAsAction="never" />
+    <!--<item-->
+        <!--android:id="@+id/item_conntoserver"-->
+        <!--android:title="@string/connect_to_server"-->
+        <!--android:orderInCategory="100"-->
+        <!--app:showAsAction="never" />-->
     <item
         android:id="@+id/item_login"
         android:title="@string/login"

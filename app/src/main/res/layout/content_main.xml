@@ -14,7 +14,7 @@
     tools:showIn="@layout/app_bar_main">
     <FrameLayout
         android:layout_width="match_parent"
-        android:layout_height="512dp"
+        android:layout_height="match_parent"
         android:layout_gravity="center"
         android:id="@+id/SAILSMap">
 
@@ -23,7 +23,7 @@
             android:layout_height="wrap_content"
             android:id="@+id/lockcenter"
             android:layout_gravity="center"
-            android:contentDescription="t" />
+            android:contentDescription="map" />
 
     </FrameLayout>
 

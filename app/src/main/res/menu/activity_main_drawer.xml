@@ -24,12 +24,12 @@
         <menu>
             <item
                 android:id="@+id/nav_share"
-                android:icon="@mipmap/ic_launcher"
-                android:title="Share" />
+                android:icon="@drawable/ic_info_outline"
+                android:title="關於" />
             <item
                 android:id="@+id/nav_send"
-                android:icon="@mipmap/ic_launcher"
-                android:title="Send" />
+                android:icon="@drawable/ic_help_black"
+                android:title="幫助" />
         </menu>
     </item>
 

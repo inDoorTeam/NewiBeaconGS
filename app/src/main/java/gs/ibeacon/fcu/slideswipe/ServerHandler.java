@@ -22,8 +22,14 @@ public class ServerHandler {
     private String username = null;
     private String address = "192.168.43.122";
     private Handler mHandler = new Handler();
-    private boolean isLogin = false;
+    private static boolean isLogin = false;
     private int port = 8766;
+    private static ServerHandler serverHandler = null;
+    public static ServerHandler getInstance() {
+        if(serverHandler == null || !isLogin)
+            serverHandler = (new ServerHandler());
+        return serverHandler;
+    }
 
     public ServerHandler(){
         DLog.d(TAG, "ServerHandler");
@@ -47,7 +53,7 @@ public class ServerHandler {
                         DLog.d(TAG, "LOGIN ? " + isLogin);
                         if(isLogin){
                             username = receiveObject.getString(JSON.KEY_USER_NAME);
-                            (new Thread(serverHandler)).start();
+                            (new Thread(serverHandlerRunnable)).start();
                         }
                     }
                 }
@@ -57,7 +63,7 @@ public class ServerHandler {
             }
         }
     };
-    public Runnable serverHandler = new Runnable(){
+    public Runnable serverHandlerRunnable = new Runnable(){
         @Override
         public void run() {
             DLog.d(TAG, "serverHandlerRun");
@@ -103,5 +109,8 @@ public class ServerHandler {
     }
     public String getUsername(){
         return username;
+    }
+    public boolean isConnected(){
+        return clientSocket.isConnected();
     }
 }
