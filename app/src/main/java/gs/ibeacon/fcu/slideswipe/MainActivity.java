@@ -8,12 +8,16 @@ import android.app.ProgressDialog;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
+import com.getbase.floatingactionbutton.FloatingActionButton;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
+
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
 import android.os.Vibrator;
-import android.support.design.widget.FloatingActionButton;
+//import android.support.design.widget.FloatingActionButton;
+
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.ActionBar;
 import android.text.Html;
@@ -113,9 +117,10 @@ public class MainActivity extends AppCompatActivity
         getWindow().setStatusBarColor(getResources().getColor(R.color.toolbarU));
         actionBar.setTitle(Html.fromHtml("<font color='#00FFCC'>智慧導引</font>"));
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        assert fab != null;
-        fab.setOnClickListener(new View.OnClickListener() {
+
+        FloatingActionButton actionA = (FloatingActionButton) findViewById(R.id.action_a);
+        assert actionA != null;
+        actionA.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 helloText.setVisibility(View.INVISIBLE);
