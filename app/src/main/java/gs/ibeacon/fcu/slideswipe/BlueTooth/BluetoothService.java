@@ -5,12 +5,16 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 
+import org.json.JSONObject;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.UUID;
 
+import gs.ibeacon.fcu.slideswipe.JSON.JSON;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
 import gs.ibeacon.fcu.slideswipe.MainActivity;
+import gs.ibeacon.fcu.slideswipe.ServerHandler;
 
 /**
  * Created by bing on 2016/6/10.
@@ -38,9 +42,16 @@ public class BluetoothService {
         try {
             btSocket = device.createRfcommSocketToServiceRecord(MY_UUID);
             btSocket.connect();
+            ServerHandler serverHandler = ServerHandler.getInstance();
+            if(serverHandler != null && serverHandler.isLogin()) {
+                JSONObject bindingJSONObject = new JSONObject();
+                bindingJSONObject.put(JSON.KEY_STATE, JSON.STATE_CAR_BINDING);
+                bindingJSONObject.put(JSON.KEY_BINDING, true);
+                serverHandler.sendToServer(bindingJSONObject);
+            }
             DLog.d(TAG, "藍芽已連線");
         }
-        catch (IOException e) {
+        catch (Exception e) {
             DLog.d(TAG, "藍芽socket建立失敗");
         }
 

@@ -1,13 +1,24 @@
 package gs.ibeacon.fcu.slideswipe;
 
+import android.content.DialogInterface;
 import android.os.Handler;
+
+import com.sails.engine.LocationRegion;
+import com.sails.engine.overlay.Marker;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.List;
 
+import gs.ibeacon.fcu.slideswipe.BlueTooth.BluetoothService;
+import gs.ibeacon.fcu.slideswipe.Fragment.FriendFragment;
 import gs.ibeacon.fcu.slideswipe.JSON.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
 
@@ -20,7 +31,7 @@ public class ServerHandler {
     private DataInputStream sendFromServer;
     private DataOutputStream sendToServer;
     private String username = null;
-    private String address = "192.168.43.122";
+    private String address = "192.168.0.110";
     private Handler mHandler = new Handler();
     private static boolean isLogin = false;
     private int port = 8766;
@@ -76,16 +87,45 @@ public class ServerHandler {
                         if (receiveMessage != null) {
                             receiveObject = new JSONObject(receiveMessage);
                             int state = receiveObject.getInt(JSON.KEY_STATE);
+                            DLog.d(TAG, "state : " + state);
                             switch(state){
                                 case JSON.STATE_WHOAMI:
                                     String name = receiveObject.getString(JSON.KEY_USER_NAME);
                                     System.out.println("You are :" + name);
                                     break;
                                 case JSON.STATE_FIND_FRIEND:
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            JSONArray friendLocationJSONArray = null;
+                                            final ArrayList<String> friendNameList = new ArrayList<String>();
+                                            final ArrayList<String> friendLocList = new ArrayList<String>();
+                                            FriendFragment.friendListAdapter.clear();
+                                            friendNameList.clear();
+                                            friendLocList.clear();
+                                            try {
+                                                friendLocationJSONArray = receiveObject.getJSONArray(JSON.KEY_USER_LIST);
+                                                for(int index = 0 ; index < friendLocationJSONArray.length() ; index ++){
+                                                    FriendFragment.friendListAdapter.add(friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME));
+                                                    friendNameList.add(friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME));
+                                                    friendLocList.add(friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_LOCATION));
+                                                }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
                                     break;
                                 case JSON.STATE_LOGOUT:
                                     isLogin = !receiveObject.getBoolean(JSON.KEY_RESULT);
                                     break;
+                                case JSON.STATE_CAR_MOVE:
+                                    BluetoothService bluetoothService = BluetoothService.getInstance();
+                                    if(bluetoothService != null && bluetoothService.isConnected()){
+                                        bluetoothService.writeData("r");
+                                    }
+                                    break;
+
                             }
                         }
                     }

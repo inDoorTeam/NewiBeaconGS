@@ -14,6 +14,7 @@
             android:id="@+id/usr_input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:inputType="textVisiblePassword"
             android:hint="帳號"
             />
     </android.support.design.widget.TextInputLayout>

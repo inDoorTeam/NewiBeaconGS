@@ -10,6 +10,8 @@ import android.bluetooth.BluetoothAdapter;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.RemoteException;
 import android.os.Vibrator;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -29,6 +31,7 @@ import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
+import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -37,9 +40,18 @@ import com.sails.engine.SAILS;
 import com.sails.engine.SAILSMapView;
 import com.sails.engine.overlay.Marker;
 
+import org.altbeacon.beacon.Beacon;
+import org.altbeacon.beacon.BeaconConsumer;
+import org.altbeacon.beacon.BeaconManager;
+import org.altbeacon.beacon.BeaconParser;
+import org.altbeacon.beacon.RangeNotifier;
+import org.altbeacon.beacon.Region;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.UUID;
 
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
@@ -48,13 +60,12 @@ import gs.ibeacon.fcu.slideswipe.BlueTooth.*;
 import me.drakeet.materialdialog.MaterialDialog;
 
 public class MainActivity extends AppCompatActivity
-        implements NavigationView.OnNavigationItemSelectedListener {
+        implements NavigationView.OnNavigationItemSelectedListener, BeaconConsumer {
     private static final int REQUEST_CONNECT_DEVICE = 1;
     public static final String TAG = "MainActivity";
     public static BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
     private ServerHandler serverHandler;
     private BluetoothService bluetoothService;
-
     private NavigationView navigationView;
     private MenuItem imgItem = null;
     private MenuItem logItem = null;
@@ -71,6 +82,21 @@ public class MainActivity extends AppCompatActivity
     private Vibrator mVibrator;
     private ProgressDialog msgLoading ;
     private MaterialDialog msgLoadSuccess ;
+
+
+    private BeaconManager beaconManager;
+    private String myLocation = null;
+    private int Rssi, Major, Minor;
+    public int PreviousRssi = -1000;
+    public int PreviousMajor = 0,PreviousMinor = 0;
+    private boolean isGuiding = false;
+    private List<LocationRegion> locationRegions = null;
+    private Handler mHandler;
+    private String Uuid = null;
+    private TextView rssiText = null;
+    private TextView majorText = null;
+    private TextView minorText = null;
+    private ImageView locationButton = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,7 +144,6 @@ public class MainActivity extends AppCompatActivity
         userID = (TextView) headerView.findViewById(R.id.userID);
         helloText = (TextView) findViewById(R.id.welcome);
 
-
         mSails = new SAILS(this);
         mSails.setMode(SAILS.BLE_GFP_IMU);
         mSailsMapView = new SAILSMapView(this);
@@ -129,6 +154,28 @@ public class MainActivity extends AppCompatActivity
         msgLoading = new ProgressDialog(this);
         msgLoadSuccess = new MaterialDialog(this);
         mVibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
+
+
+        rssiText = (TextView) findViewById(R.id.textRssi);
+        majorText = (TextView) findViewById(R.id.textMajor);
+        minorText = (TextView) findViewById(R.id.textMinor);
+
+        mHandler = new Handler();
+        beaconManager = BeaconManager.getInstanceForApplication(this);
+        beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
+        startScan();
+        locationButton = (ImageView) findViewById(R.id.LocationButton);
+        locationButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (locationRegions != null && myLocation != null){
+                    mSailsMapView.getMarkerManager().clear();
+                    mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                }
+            }
+        });
     }
 
     @Override
@@ -403,6 +450,95 @@ public class MainActivity extends AppCompatActivity
                     msgLoadSuccess.show();
                 }
             });
+        }
+    };
+
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        beaconManager.unbind(this);
+    }
+    @Override
+    public void onBeaconServiceConnect() {
+        try {
+            //beaconManager.startMonitoringBeaconsInRegion(new Region("all-beacons-region", null, null, null ));
+            beaconManager.startRangingBeaconsInRegion(new Region("ibeaconscan", null, null, null ));
+        }
+        catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        //beaconManager.setMonitorNotifier(this);
+        beaconManager.setRangeNotifier(new RangeNotifier() {
+            @Override
+            public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
+                if (beacons.size() > 0) {
+                    org.altbeacon.beacon.Beacon beacon = beacons.iterator().next();
+
+                    Rssi = beacon.getRssi();
+                    Uuid = beacon.getId1().toUuidString();
+                    Major = beacon.getId2().toInt();
+                    Minor = beacon.getId3().toInt();
+                    mHandler.post(scanRunnable);
+                }
+
+            }
+        });
+    }
+
+    public void startScan() {
+        beaconManager.bind(this);
+    }
+
+    public Runnable scanRunnable = new Runnable() {
+        @Override
+        public void run() {
+            DLog.d(TAG, "scanRun");
+            if( PreviousMajor != Major || PreviousMinor != Minor ) {
+                //set start region
+                // List<LocationRegion> locationRegions = null;
+                JSONObject ibeaconJSONObject = new JSONObject();
+                if (Major == 4369 && Minor == 8738) {
+                    myLocation = "資電234 - 網際網路及軟體工程學程實驗室";
+                    locationRegions = mSails.findRegionByLabel(myLocation);
+                } else if(Major == 43690 && Minor == 65505){
+                    myLocation = "資電201 - 資訊系辦公室";
+                    locationRegions = mSails.findRegionByLabel(myLocation);
+                } else if(Major == 257 && Minor == 65505){
+                    myLocation = "資電222 - 第三國際會議廳";
+                    locationRegions = mSails.findRegionByLabel(myLocation);
+                }
+                if (isGuiding) {
+                    mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                }
+                if(myLocation != null) {
+                    try {
+                        ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
+                        ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
+
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+                }
+                if(serverHandler != null && serverHandler.isLogin())
+                    serverHandler.sendToServer(ibeaconJSONObject);
+
+            }
+            PreviousRssi = Rssi;
+            PreviousMajor = Major;
+            PreviousMinor = Minor;
+
+//            UuidText.setText( "Uuid  : " + Uuid);
+//            rssiText.setText( "Rssi  : " + Rssi);
+//            majorText.setText("Major : " + Major);
+//            minorText.setText("Minor : " + Minor);
+            if(myLocation != null){
+                rssiText.setText( "You are at : " + myLocation);
+            }
         }
     };
 }

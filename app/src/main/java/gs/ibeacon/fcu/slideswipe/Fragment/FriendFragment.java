@@ -1,7 +1,9 @@
 package gs.ibeacon.fcu.slideswipe.Fragment;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.widget.DrawerLayout;
@@ -9,9 +11,22 @@ import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+
+import com.sails.engine.LocationRegion;
+import com.sails.engine.overlay.Marker;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.List;
 
 import gs.ibeacon.fcu.slideswipe.*;
+import gs.ibeacon.fcu.slideswipe.JSON.JSON;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
+import me.drakeet.materialdialog.MaterialDialog;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,6 +47,9 @@ public class FriendFragment extends Fragment {
     private String mParam2;
 
     private OnFragmentInteractionListener mListener;
+    private Button friendListButton = null;
+    public static ArrayAdapter<String> friendListAdapter = null;
+    private AlertDialog.Builder friendList;
 
     public FriendFragment() {
         // Required empty public constructor
@@ -72,7 +90,59 @@ public class FriendFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_friend, container, false);
+        View v = inflater.inflate(R.layout.fragment_friend, container, false);
+        friendListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
+        friendListButton = (Button) v.findViewById(R.id.buttonFriend);
+        friendListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject findFriendJSONObject = new JSONObject();
+                try {
+                    findFriendJSONObject.put(JSON.KEY_STATE, JSON.STATE_FIND_FRIEND);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+                ServerHandler serverHandler = ServerHandler.getInstance();
+                if(serverHandler != null && serverHandler.isLogin())
+                    serverHandler.sendToServer(findFriendJSONObject);
+                try {
+                    Thread.sleep(300);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                friendList.show();
+            }
+        });
+        friendList = new AlertDialog.Builder(getActivity());
+        friendList.setTitle("Friend List");
+        friendList.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        friendList.setAdapter(friendListAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String friendName = friendListAdapter.getItem(which);
+//                String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
+//                List<LocationRegion> locationRegions = null ;
+//                locationRegions = mSails.findRegionByLabel(myLocation);
+//                mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+//                mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+//                mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+//
+//                locationRegions = mSails.findRegionByLabel(friendLocation);
+//                LocationRegion lr = locationRegions.get(0);
+//                mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.map_destination)));
+//                mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
+//                mSailsMapView.getRoutingManager().setTargetRegion(lr);
+//                mSailsMapView.getRoutingManager().enableHandler();
+//                //startGuiding();
+            }
+        });
+
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event
