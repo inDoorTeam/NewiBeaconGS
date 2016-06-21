@@ -1,13 +1,21 @@
 package gs.ibeacon.fcu.slideswipe.Fragment;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+
+import com.sails.engine.LocationRegion;
+
+import java.util.List;
 
 import gs.ibeacon.fcu.slideswipe.*;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
@@ -26,6 +34,9 @@ public class GuideFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     public static final String TAG = "GuideFragment";
+    private AlertDialog.Builder locationListDialog;
+    private Button locationListButton;
+
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
@@ -71,7 +82,62 @@ public class GuideFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_guide, container, false);
+        View v = inflater.inflate(R.layout.fragment_guide, container, false);
+
+
+
+        final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
+        List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
+        try {
+            for (int i = 0; i < l.size(); i++) {
+                String newLocationl = l.get(i).label;
+                if (!newLocationl.equals("")) {
+                    locationListAdapter.add(newLocationl);
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        locationListDialog = new AlertDialog.Builder(getActivity());
+        locationListDialog.setTitle("地點導引");
+        locationListDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
+                    for (int i = 0; i < l.size(); i++) {
+                        String newLocationl = l.get(i).label;
+                        if (!newLocationl.equals("")) {
+                            locationListAdapter.add(newLocationl);
+                        }
+                    }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                dialog.dismiss();
+            }
+        });
+        locationListDialog.setAdapter(locationListAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String friendName = locationListAdapter.getItem(which);
+                //String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
+                MainActivity.mainActivity.guideToFriend(friendName);
+            }
+        });
+
+        locationListDialog.show();
+
+        locationListButton = (Button) v.findViewById(R.id.buttonLocationList);
+        locationListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                locationListDialog.show();
+            }
+        });
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

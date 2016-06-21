@@ -29,36 +29,40 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        fab:fab_addButtonColorNormal="@color/white"
+        fab:fab_addButtonColorNormal="@color/lite_blue"
         fab:fab_addButtonColorPressed="@color/white_pressed"
-        fab:fab_addButtonPlusIconColor="@color/half_black"
+        fab:fab_addButtonPlusIconColor="@color/pink"
         fab:fab_labelStyle="@style/menu_labels_style"
         android:layout_marginBottom="16dp"
         android:layout_marginRight="16dp"
         android:layout_marginEnd="16dp">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_a"
+            android:id="@+id/loadingMapAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_title="Loading Map"
+            fab:fab_colorNormal="@color/lite_blue"
+            fab:fab_title="載入地圖"
+            android:src="@android:drawable/ic_dialog_map"
             fab:fab_colorPressed="@color/white_pressed"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_b"
+            android:id="@+id/findLocationAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_title="Location"
+            fab:fab_colorNormal="@color/lite_blue"
+            app:fab_icon="@drawable/ic_target"
+            fab:fab_title="定位"
             fab:fab_colorPressed="@color/white_pressed"/>
 
         <com.getbase.floatingactionbutton.FloatingActionButton
-            android:id="@+id/action_c"
+            android:id="@+id/clearMarkAction"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            fab:fab_colorNormal="@color/white"
-            fab:fab_title="ActionC"
+            fab:fab_colorNormal="@color/lite_blue"
+            app:fab_icon="@drawable/ic_clear"
+            fab:fab_title="取消標記"
+
             fab:fab_colorPressed="@color/white_pressed"/>
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>

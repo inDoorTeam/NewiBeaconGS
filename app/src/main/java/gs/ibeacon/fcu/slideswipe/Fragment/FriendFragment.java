@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.widget.DrawerLayout;
 import android.support.v7.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,19 +13,14 @@ import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 
-import com.sails.engine.LocationRegion;
-import com.sails.engine.overlay.Marker;
-
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.util.List;
+import java.util.ArrayList;
 
 import gs.ibeacon.fcu.slideswipe.*;
 import gs.ibeacon.fcu.slideswipe.JSON.JSON;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
-import me.drakeet.materialdialog.MaterialDialog;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -50,7 +44,8 @@ public class FriendFragment extends Fragment {
     private Button friendListButton = null;
     public static ArrayAdapter<String> friendListAdapter = null;
     private AlertDialog.Builder friendList;
-
+    public static ArrayList<String> friendNameList = new ArrayList<String>();
+    public static ArrayList<String> friendLocList = new ArrayList<String>();
     public FriendFragment() {
         // Required empty public constructor
     }
@@ -92,7 +87,7 @@ public class FriendFragment extends Fragment {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_friend, container, false);
         friendListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
-        friendListButton = (Button) v.findViewById(R.id.buttonFriend);
+        friendListButton = (Button) v.findViewById(R.id.buttonFriendList);
         friendListButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -114,7 +109,7 @@ public class FriendFragment extends Fragment {
             }
         });
         friendList = new AlertDialog.Builder(getActivity());
-        friendList.setTitle("Friend List");
+        friendList.setTitle("好友清單");
         friendList.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -125,23 +120,12 @@ public class FriendFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String friendName = friendListAdapter.getItem(which);
-//                String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
-//                List<LocationRegion> locationRegions = null ;
-//                locationRegions = mSails.findRegionByLabel(myLocation);
-//                mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-//                mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-//                mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-//
-//                locationRegions = mSails.findRegionByLabel(friendLocation);
-//                LocationRegion lr = locationRegions.get(0);
-//                mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.map_destination)));
-//                mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
-//                mSailsMapView.getRoutingManager().setTargetRegion(lr);
-//                mSailsMapView.getRoutingManager().enableHandler();
-//                //startGuiding();
+                String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
+                MainActivity.mainActivity.guideToFriend(friendLocation);
             }
         });
 
+        friendList.show();
         return v;
     }
 

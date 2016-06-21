@@ -87,7 +87,6 @@ public class MainActivity extends AppCompatActivity
     private ProgressDialog msgLoading ;
     private MaterialDialog msgLoadSuccess ;
 
-
     private BeaconManager beaconManager;
     private String myLocation = null;
     private int Rssi, Major, Minor;
@@ -100,7 +99,6 @@ public class MainActivity extends AppCompatActivity
     private TextView rssiText = null;
     private TextView majorText = null;
     private TextView minorText = null;
-    private ImageView locationButton = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,9 +116,9 @@ public class MainActivity extends AppCompatActivity
         actionBar.setTitle(Html.fromHtml("<font color='#00FFCC'>智慧導引</font>"));
 
 
-        FloatingActionButton actionA = (FloatingActionButton) findViewById(R.id.action_a);
-        assert actionA != null;
-        actionA.setOnClickListener(new View.OnClickListener() {
+        FloatingActionButton actionLoadingMap = (FloatingActionButton) findViewById(R.id.loadingMapAction);
+        assert actionLoadingMap != null;
+        actionLoadingMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 helloText.setVisibility(View.INVISIBLE);
@@ -133,6 +131,44 @@ public class MainActivity extends AppCompatActivity
                     }
                 }).setCanceledOnTouchOutside(true).setTitle("Loading Map").setMessage("Load successfully");
                 mSailsMapView.post(loadMapRunnable);
+            }
+        });
+
+        FloatingActionButton actionFindLocation = (FloatingActionButton) findViewById(R.id.findLocationAction);
+        assert actionFindLocation != null;
+        actionFindLocation.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    if (locationRegions != null && myLocation != null) {
+                        locationRegions = mSails.findRegionByLabel(myLocation);
+                        mSailsMapView.getMarkerManager().clear();
+                        mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+                        mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                        mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                    }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        });
+
+
+        FloatingActionButton actionClearMark = (FloatingActionButton) findViewById(R.id.clearMarkAction);
+        assert actionClearMark != null;
+        actionClearMark.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+
+                    mSailsMapView.getRoutingManager().disableHandler();
+                    mSailsMapView.getMarkerManager().clear();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
         });
 
@@ -169,18 +205,6 @@ public class MainActivity extends AppCompatActivity
         beaconManager = BeaconManager.getInstanceForApplication(this);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         startScan();
-        locationButton = (ImageView) findViewById(R.id.LocationButton);
-        locationButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (locationRegions != null && myLocation != null){
-                    mSailsMapView.getMarkerManager().clear();
-                    mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-                }
-            }
-        });
     }
 
     @Override
@@ -546,4 +570,21 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
+    public void guideToFriend(String friendLocation){
+
+        locationRegions = mSails.findRegionByLabel(myLocation);
+        mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+        mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+        mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+
+        locationRegions = mSails.findRegionByLabel(friendLocation);
+        LocationRegion lr = locationRegions.get(0);
+        mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.map_destination)));
+        mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
+        mSailsMapView.getRoutingManager().setTargetRegion(lr);
+        mSailsMapView.getRoutingManager().enableHandler();
+    }
+    public SAILS getSails(){
+        return mSails;
+    }
 }

@@ -31,7 +31,7 @@ public class ServerHandler {
     private DataInputStream sendFromServer;
     private DataOutputStream sendToServer;
     private String username = null;
-    private String address = "192.168.0.110";
+    private String address = "140.134.226.181";
     private Handler mHandler = new Handler();
     private static boolean isLogin = false;
     private int port = 8766;
@@ -97,18 +97,18 @@ public class ServerHandler {
                                     mHandler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            JSONArray friendLocationJSONArray = null;
-                                            final ArrayList<String> friendNameList = new ArrayList<String>();
-                                            final ArrayList<String> friendLocList = new ArrayList<String>();
+
                                             FriendFragment.friendListAdapter.clear();
-                                            friendNameList.clear();
-                                            friendLocList.clear();
+                                            FriendFragment.friendNameList.clear();
+                                            FriendFragment.friendLocList.clear();
                                             try {
-                                                friendLocationJSONArray = receiveObject.getJSONArray(JSON.KEY_USER_LIST);
+                                                JSONArray friendLocationJSONArray = receiveObject.getJSONArray(JSON.KEY_USER_LIST);
                                                 for(int index = 0 ; index < friendLocationJSONArray.length() ; index ++){
-                                                    FriendFragment.friendListAdapter.add(friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME));
-                                                    friendNameList.add(friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME));
-                                                    friendLocList.add(friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_LOCATION));
+                                                    String username = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME);
+                                                    String location = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_LOCATION);
+                                                    FriendFragment.friendListAdapter.add(username);
+                                                    FriendFragment.friendNameList.add(username);
+                                                    FriendFragment.friendLocList.add(location);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();

@@ -10,5 +10,11 @@
         android:layout_height="match_parent"
         android:textColor="@color/textColor"
         android:text="@string/title_guide" />
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="地點導引"
+        android:id="@+id/buttonLocationList"
+        android:layout_gravity="center_horizontal|bottom" />
 
 </FrameLayout>
