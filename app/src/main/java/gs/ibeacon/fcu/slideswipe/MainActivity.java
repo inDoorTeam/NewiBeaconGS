@@ -154,7 +154,6 @@ public class MainActivity extends AppCompatActivity
             }
         });
 
-
         FloatingActionButton actionClearMark = (FloatingActionButton) findViewById(R.id.clearMarkAction);
         assert actionClearMark != null;
         actionClearMark.setOnClickListener(new View.OnClickListener() {
@@ -454,6 +453,21 @@ public class MainActivity extends AppCompatActivity
                                     mSailsMapView.getMarkerManager().clear();
                                     mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
                                     mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                                    myLocation = locationRegions.get(0).label;
+                                    MainActivity.this.locationRegions = mSails.findRegionByLabel(myLocation);
+                                    rssiText.setText( "You are at : " + myLocation);
+                                    JSONObject ibeaconJSONObject = new JSONObject();
+                                    if(myLocation != null) {
+                                        try {
+                                            ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
+                                            ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
+
+                                        } catch (JSONException e) {
+                                            e.printStackTrace();
+                                        }
+                                    }
+                                    if(serverHandler != null && serverHandler.isLogin())
+                                        serverHandler.sendToServer(ibeaconJSONObject);
                                 }
                             });
 
