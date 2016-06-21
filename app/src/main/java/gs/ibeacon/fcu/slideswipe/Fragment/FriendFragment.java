@@ -121,10 +121,23 @@ public class FriendFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String friendName = friendListAdapter.getItem(which);
                 String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
-                MainActivity.mainActivity.guideToFriend(friendLocation);
+                MainActivity.mainActivity.guideToTarget(friendLocation);
             }
         });
-
+        JSONObject findFriendJSONObject = new JSONObject();
+        try {
+            findFriendJSONObject.put(JSON.KEY_STATE, JSON.STATE_FIND_FRIEND);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+        ServerHandler serverHandler = ServerHandler.getInstance();
+        if(serverHandler != null && serverHandler.isLogin())
+            serverHandler.sendToServer(findFriendJSONObject);
+        try {
+            Thread.sleep(300);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
         friendList.show();
         return v;
     }

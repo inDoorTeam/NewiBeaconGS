@@ -122,6 +122,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 helloText.setVisibility(View.INVISIBLE);
+                ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
                 msgLoading.setTitle("Loading Map");
                 msgLoading.setMessage("Waiting ...");
                 msgLoadSuccess.setPositiveButton("OK", new View.OnClickListener() {
@@ -154,6 +155,7 @@ public class MainActivity extends AppCompatActivity
                         mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
                         mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
                     }
+                    ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -170,6 +172,8 @@ public class MainActivity extends AppCompatActivity
 
                     mSailsMapView.getRoutingManager().disableHandler();
                     mSailsMapView.getMarkerManager().clear();
+                    ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
+
                 }
                 catch (Exception e){
                     e.printStackTrace();
@@ -591,19 +595,24 @@ public class MainActivity extends AppCompatActivity
             }
         }
     };
-    public void guideToFriend(String friendLocation){
+    public void guideToTarget(String targetLocation){
+        try {
 
-        locationRegions = mSails.findRegionByLabel(myLocation);
-        mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-        mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-        mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+            locationRegions = mSails.findRegionByLabel(targetLocation);
+            LocationRegion lr = locationRegions.get(0);
+            mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.map_destination)));
+            mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
+            mSailsMapView.getRoutingManager().setTargetRegion(lr);
+            mSailsMapView.getRoutingManager().enableHandler();
 
-        locationRegions = mSails.findRegionByLabel(friendLocation);
-        LocationRegion lr = locationRegions.get(0);
-        mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.map_destination)));
-        mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
-        mSailsMapView.getRoutingManager().setTargetRegion(lr);
-        mSailsMapView.getRoutingManager().enableHandler();
+            locationRegions = mSails.findRegionByLabel(myLocation);
+            mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+            mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+            mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
     }
     public SAILS getSails(){
         return mSails;

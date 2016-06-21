@@ -124,7 +124,7 @@ public class GuideFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String friendName = locationListAdapter.getItem(which);
                 //String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
-                MainActivity.mainActivity.guideToFriend(friendName);
+                MainActivity.mainActivity.guideToTarget(friendName);
             }
         });
 
