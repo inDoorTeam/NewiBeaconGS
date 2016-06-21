@@ -131,6 +131,13 @@ public class MainActivity extends AppCompatActivity
                     }
                 }).setCanceledOnTouchOutside(true).setTitle("Loading Map").setMessage("Load successfully");
                 mSailsMapView.post(loadMapRunnable);
+                try{
+                    mSailsMapView.getRoutingManager().disableHandler();
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                mSailsMapView.getMarkerManager().clear();
             }
         });
 
