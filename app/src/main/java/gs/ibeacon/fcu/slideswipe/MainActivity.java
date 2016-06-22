@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity
     private TextView majorText = null;
     private TextView minorText = null;
     private boolean binding = false;
+    private int pathColor = 0xFF46A3FF;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d(TAG, "onCreate");
@@ -151,8 +152,8 @@ public class MainActivity extends AppCompatActivity
                         locationRegions = mSails.findRegionByLabel(myLocation);
                         mSailsMapView.getMarkerManager().clear();
                         mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-                        mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-                        mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                        mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+                        mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
                     }
                     ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
                 }
@@ -503,7 +504,7 @@ public class MainActivity extends AppCompatActivity
                                     if (mSailsMapView.getRoutingManager().getStartRegion() != null) {
                                         LocationRegion lr = locationRegions.get(0);
                                         mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.ic_dest)));
-                                        mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
+                                        mSailsMapView.getRoutingManager().getPathPaint().setColor(pathColor);
                                         mSailsMapView.getRoutingManager().setTargetRegion(lr);
                                         mSailsMapView.getRoutingManager().enableHandler();
                                     }
@@ -635,7 +636,7 @@ public class MainActivity extends AppCompatActivity
 
             mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(image)));
 
-            mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
+            mSailsMapView.getRoutingManager().getPathPaint().setColor(pathColor);
             mSailsMapView.getRoutingManager().setTargetRegion(lr);
             mSailsMapView.getRoutingManager().enableHandler();
         }
