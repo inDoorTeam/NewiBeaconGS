@@ -92,7 +92,6 @@ public class MainActivity extends AppCompatActivity
     private int Rssi, Major, Minor;
     public int PreviousRssi = -1000;
     public int PreviousMajor = 0,PreviousMinor = 0;
-    private boolean isGuiding = false;
     private List<LocationRegion> locationRegions = null;
     private Handler mHandler;
     private String Uuid = null;
@@ -280,7 +279,7 @@ public class MainActivity extends AppCompatActivity
                     loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
                     serverHandler.sendToServer(loginJSONObject);
                     msgLoading.setTitle("登入中");
-                    msgLoading.setMessage("Loading...");
+                    msgLoading.setMessage("Waiting...");
                     msgLoading.show();
                 } catch (Exception e) {
                     e.printStackTrace();
@@ -316,25 +315,33 @@ public class MainActivity extends AppCompatActivity
             public void onClick(View v) {
                 DLog.d(TAG, "登出中...");
                 snackMsg("登出中...");
+                logoutDialog.dismiss();
                 JSONObject logoutJSONObject = new JSONObject();
                 try {
                     logoutJSONObject.put(JSON.KEY_STATE, JSON.STATE_LOGOUT);
                     serverHandler.sendToServer(logoutJSONObject);
-                    Thread.sleep(400);
+                    msgLoading.setTitle("登出中");
+                    msgLoading.setMessage("Waiting...");
+                    msgLoading.show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
-                if(!serverHandler.isLogin()){
-                    DLog.d(TAG, "登出成功");
-                    snackMsg("登出成功");
-                    userID.setText(R.string.not_login);
-                    helloText.setText(R.string.welcome_text);
-                    logItem.setTitle("登入");
-                }else{
-                    DLog.d(TAG, "登出失敗");
-                    snackMsg("登出失敗");
-                }
-                logoutDialog.dismiss();
+                mHandler.postDelayed(new Runnable(){
+                    @Override
+                    public void run() {
+                        if(!serverHandler.isLogin()){
+                            DLog.d(TAG, "登出成功");
+                            snackMsg("登出成功");
+                            userID.setText(R.string.not_login);
+                            helloText.setText(R.string.welcome_text);
+                            logItem.setTitle("登入");
+                        }else{
+                            DLog.d(TAG, "登出失敗");
+                            snackMsg("登出失敗");
+                        }
+                        msgLoading.dismiss();
+                    }
+                }, 2000);
             }
         }).setNegativeButton("取消", new View.OnClickListener() {
             @Override
@@ -352,7 +359,6 @@ public class MainActivity extends AppCompatActivity
 
         switch(id){
             case R.id.item_login:
-
                 snackMsg("連線中...");
                 serverHandler = ServerHandler.getInstance();
                 try {
@@ -470,7 +476,9 @@ public class MainActivity extends AppCompatActivity
                                     mVibrator.vibrate(70);
                                     mSailsMapView.getMarkerManager().clear();
                                     mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-                                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+                                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+                                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+
                                     myLocation = locationRegions.get(0).label;
                                     MainActivity.this.locationRegions = mSails.findRegionByLabel(myLocation);
                                     rssiText.setText( "當前位置 : " + myLocation);
@@ -558,25 +566,17 @@ public class MainActivity extends AppCompatActivity
         public void run() {
             DLog.d(TAG, "scanRun");
             if( PreviousMajor != Major || PreviousMinor != Minor ) {
-                //set start region
-                // List<LocationRegion> locationRegions = null;
                 JSONObject ibeaconJSONObject = new JSONObject();
                 if (Major == 4369 && Minor == 8738) {
                     myLocation = "資電234 - 網際網路及軟體工程學程實驗室";
-                    locationRegions = mSails.findRegionByLabel(myLocation);
                 } else if(Major == 43690 && Minor == 65505){
                     myLocation = "資電201 - 資訊系辦公室";
-                    locationRegions = mSails.findRegionByLabel(myLocation);
                 } else if(Major == 257 && Minor == 65505){
                     myLocation = "資電222 - 第三國際會議廳";
-                    locationRegions = mSails.findRegionByLabel(myLocation);
                 }
-                if (isGuiding) {
-                    mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-                }
+
                 if(myLocation != null) {
+                    locationRegions = mSails.findRegionByLabel(myLocation);
                     try {
                         ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
                         ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
@@ -607,8 +607,9 @@ public class MainActivity extends AppCompatActivity
         try {
             locationRegions = mSails.findRegionByLabel(myLocation);
             mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-            mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
-            mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
+
+            mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+            mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
 
             locationRegions = mSails.findRegionByLabel(targetLocation);
             LocationRegion lr = locationRegions.get(0);
