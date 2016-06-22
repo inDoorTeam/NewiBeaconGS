@@ -139,7 +139,7 @@ public class FriendFragment extends Fragment {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
-        friendList.show();
+       // friendList.show();
         return v;
     }
 

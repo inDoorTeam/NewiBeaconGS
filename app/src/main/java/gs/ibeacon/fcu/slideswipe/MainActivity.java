@@ -100,6 +100,7 @@ public class MainActivity extends AppCompatActivity
     AlertDialog msgLoading = null;
 
     private int pathColor = 0xFF46A3FF;
+    private boolean isLoadedMap = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d(TAG, "onCreate");
@@ -122,6 +123,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 reloadingMap();
+                ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
             }
         });
 
@@ -379,6 +381,9 @@ public class MainActivity extends AppCompatActivity
         Fragment fragment = null;
         FragmentManager fragmentManager = getFragmentManager();
         findViewById(R.id.welcome).setVisibility(View.INVISIBLE);
+        if(!isLoadedMap) {
+            reloadingMap();
+        }
         int id = item.getItemId();
         switch (id) {
             case R.id.guide:
@@ -473,13 +478,15 @@ public class MainActivity extends AppCompatActivity
                                         try {
                                             ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
                                             ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
-
-                                        } catch (JSONException e) {
+                                            serverHandler.sendToServer(ibeaconJSONObject);
+                                        } catch (Exception e) {
                                             e.printStackTrace();
                                         }
                                     }
-                                    if(serverHandler != null && serverHandler.isLogin())
-                                        serverHandler.sendToServer(ibeaconJSONObject);
+                                    //PreviousRssi = 100;
+                                    PreviousMajor = 0;
+                                    PreviousMinor = 0;
+
                                 }
                             });
 
@@ -581,7 +588,17 @@ public class MainActivity extends AppCompatActivity
 
             if(myLocation != null){
                 rssiText.setText( "當前位置 : " + myLocation);
+                try {
+                    mSailsMapView.getMarkerManager().clear();
+                    mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+                } catch (Exception e){
+                    e.printStackTrace();
+                }
+
             }
+
         }
     };
     public void guideToTarget(String targetLocation, int imageView){
@@ -635,8 +652,9 @@ public class MainActivity extends AppCompatActivity
         return binding;
     }
     public void reloadingMap(){
+        isLoadedMap = true;
         helloText.setVisibility(View.INVISIBLE);
-        ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
+
         msgLoadSuccess.setPositiveButton("OK", new View.OnClickListener() {
             @Override
             public void onClick(View v) {

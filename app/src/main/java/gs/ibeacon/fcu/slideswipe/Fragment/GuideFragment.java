@@ -131,7 +131,7 @@ public class GuideFragment extends Fragment {
             }
         });
 
-        locationListDialog.show();
+     //   locationListDialog.show();
 
         locationListButton = (Button) v.findViewById(R.id.buttonLocationList);
         locationListButton.setOnClickListener(new View.OnClickListener() {
