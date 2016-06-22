@@ -4,10 +4,9 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
-import android.app.ProgressDialog;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
-import android.content.DialogInterface;
+
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
@@ -31,11 +30,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Button;
 import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.FrameLayout;
-import android.widget.ImageView;
 import android.widget.Switch;
 import android.widget.TextView;
 
@@ -55,8 +52,8 @@ import org.json.JSONObject;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.UUID;
 
+import dmax.dialog.SpotsDialog;
 import gs.ibeacon.fcu.slideswipe.Fragment.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
 import gs.ibeacon.fcu.slideswipe.JSON.*;
@@ -84,7 +81,7 @@ public class MainActivity extends AppCompatActivity
     private static SAILS mSails;
     private static SAILSMapView mSailsMapView;
     private Vibrator mVibrator;
-    private ProgressDialog msgLoading ;
+
     private MaterialDialog msgLoadSuccess ;
 
     private BeaconManager beaconManager;
@@ -99,6 +96,9 @@ public class MainActivity extends AppCompatActivity
     private TextView majorText = null;
     private TextView minorText = null;
     private boolean binding = false;
+
+    AlertDialog msgLoading = null;
+
     private int pathColor = 0xFF46A3FF;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -180,11 +180,11 @@ public class MainActivity extends AppCompatActivity
         mSails = new SAILS(this);
         mSails.setMode(SAILS.BLE_GFP_IMU);
         mSailsMapView = new SAILSMapView(this);
-//        ((FrameLayout) findViewById(R.id.SAILSMap)).addView(mSailsMapView);
+
         mapLayout = (FrameLayout) findViewById(R.id.SAILSMap);
         mapLayout.addView(mSailsMapView);
-        //mapLayout.setVisibility(View.INVISIBLE);
-        msgLoading = new ProgressDialog(this);
+        msgLoading = new SpotsDialog(MainActivity.this, R.style.loadingMapDialogProgress);
+
         msgLoadSuccess = new MaterialDialog(this);
         mVibrator = (Vibrator) getSystemService(Service.VIBRATOR_SERVICE);
 
@@ -248,6 +248,7 @@ public class MainActivity extends AppCompatActivity
         loginDialog.setPositiveButton("登入", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                final AlertDialog msgLoading = new SpotsDialog(MainActivity.this, R.style.loginDialogProgress);
                 loginDialog.dismiss();
                 DLog.d(TAG, "登入中...");
                 snackMsg("登入中...");
@@ -297,6 +298,7 @@ public class MainActivity extends AppCompatActivity
         logoutDialog.setPositiveButton("登出", new View.OnClickListener(){
             @Override
             public void onClick(View v) {
+                final AlertDialog msgLoading = new SpotsDialog(MainActivity.this, R.style.logoutDialogProgress);
                 DLog.d(TAG, "登出中...");
                 snackMsg("登出中...");
                 logoutDialog.dismiss();
@@ -577,10 +579,6 @@ public class MainActivity extends AppCompatActivity
             PreviousMajor = Major;
             PreviousMinor = Minor;
 
-//            UuidText.setText( "Uuid  : " + Uuid);
-//            rssiText.setText( "Rssi  : " + Rssi);
-//            majorText.setText("Major : " + Major);
-//            minorText.setText("Minor : " + Minor);
             if(myLocation != null){
                 rssiText.setText( "當前位置 : " + myLocation);
             }
@@ -639,8 +637,6 @@ public class MainActivity extends AppCompatActivity
     public void reloadingMap(){
         helloText.setVisibility(View.INVISIBLE);
         ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
-        msgLoading.setTitle("載入地圖中");
-        msgLoading.setMessage("Waiting ...");
         msgLoadSuccess.setPositiveButton("OK", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
