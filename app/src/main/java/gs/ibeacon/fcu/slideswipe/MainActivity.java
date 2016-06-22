@@ -169,7 +169,6 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 try {
-
                     mSailsMapView.getRoutingManager().disableHandler();
                     mSailsMapView.getMarkerManager().clear();
                     ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
@@ -266,6 +265,7 @@ public class MainActivity extends AppCompatActivity
         loginDialog.setPositiveButton("登入", new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                loginDialog.dismiss();
                 DLog.d(TAG, "登入中...");
                 snackMsg("登入中...");
                 if(!serverHandler.isConnected()) {
@@ -279,22 +279,29 @@ public class MainActivity extends AppCompatActivity
                     loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
                     loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
                     serverHandler.sendToServer(loginJSONObject);
-                    Thread.sleep(400);
+                    msgLoading.setTitle("登入中");
+                    msgLoading.setMessage("Loading...");
+                    msgLoading.show();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
+                mHandler.postDelayed(new Runnable(){
+                    @Override
+                    public void run() {
+                        if (!serverHandler.isLogin()) {
+                            DLog.d(TAG, "登入失敗");
+                            snackMsg("登入失敗");
+                        } else {
+                            DLog.d(TAG, "登入成功");
+                            snackMsg("登入成功");
+                            userID.setText(serverHandler.getUsername());
+                            helloText.setText("Hello, " + serverHandler.getUsername() + "!");
+                            logItem.setTitle("登出");
+                        }
 
-                if (!serverHandler.isLogin()) {
-                    DLog.d(TAG, "登入失敗");
-                    snackMsg("登入失敗");
-                } else {
-                    DLog.d(TAG, "登入成功");
-                    snackMsg("登入成功");
-                    userID.setText(serverHandler.getUsername());
-                    helloText.setText("Hello, " + serverHandler.getUsername() + "!");
-                    logItem.setTitle("登出");
-                }
-                loginDialog.dismiss();
+                        msgLoading.dismiss();
+                    }
+                }, 2000);
             }
         }).setNegativeButton("取消", new View.OnClickListener() {
             @Override
