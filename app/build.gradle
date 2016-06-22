@@ -31,5 +31,6 @@ dependencies {
 //    compile 'com.afollestad.material-dialogs:core:0.8.5.9'
     compile files('libs/SAILS_SDK_V1.73_Published.jar')
     compile 'com.getbase:floatingactionbutton:1.10.1'
+    compile 'info.hoang8f:fbutton:1.0.5'
 
 }

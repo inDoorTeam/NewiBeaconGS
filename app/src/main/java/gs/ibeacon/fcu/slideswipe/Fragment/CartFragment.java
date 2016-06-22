@@ -80,7 +80,6 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         }
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.title_cart);
-        MainActivity.mainActivity.snackMsg(TAG);
         bluetoothService = BluetoothService.getInstance();
     }
 

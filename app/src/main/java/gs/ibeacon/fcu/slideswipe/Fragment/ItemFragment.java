@@ -65,7 +65,6 @@ public class ItemFragment extends Fragment {
         }
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.title_item);
-        MainActivity.mainActivity.snackMsg(TAG);
     }
 
     @Override

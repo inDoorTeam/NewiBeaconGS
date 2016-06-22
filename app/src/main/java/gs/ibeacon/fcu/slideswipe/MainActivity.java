@@ -121,24 +121,7 @@ public class MainActivity extends AppCompatActivity
         actionLoadingMap.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                helloText.setVisibility(View.INVISIBLE);
-                ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
-                msgLoading.setTitle("載入地圖中");
-                msgLoading.setMessage("Waiting ...");
-                msgLoadSuccess.setPositiveButton("OK", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        msgLoadSuccess.dismiss();
-                    }
-                }).setCanceledOnTouchOutside(true).setTitle("載入地圖").setMessage("載入成功！");
-                mSailsMapView.post(loadMapRunnable);
-                try{
-                    mSailsMapView.getRoutingManager().disableHandler();
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
-                mSailsMapView.getMarkerManager().clear();
+                reloadingMap();
             }
         });
 
@@ -652,5 +635,25 @@ public class MainActivity extends AppCompatActivity
     }
     public boolean getBindingState(){
         return binding;
+    }
+    public void reloadingMap(){
+        helloText.setVisibility(View.INVISIBLE);
+        ((FloatingActionsMenu)findViewById(R.id.multiple_actions)).toggle();
+        msgLoading.setTitle("載入地圖中");
+        msgLoading.setMessage("Waiting ...");
+        msgLoadSuccess.setPositiveButton("OK", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                msgLoadSuccess.dismiss();
+            }
+        }).setCanceledOnTouchOutside(true).setTitle("載入地圖").setMessage("載入成功！");
+        mSailsMapView.post(loadMapRunnable);
+        try{
+            mSailsMapView.getRoutingManager().disableHandler();
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        mSailsMapView.getMarkerManager().clear();
     }
 }

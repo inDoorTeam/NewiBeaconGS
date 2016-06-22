@@ -79,7 +79,6 @@ public class FriendFragment extends Fragment {
         }
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.title_friend);
-        MainActivity.mainActivity.snackMsg(TAG);
     }
 
     @Override
