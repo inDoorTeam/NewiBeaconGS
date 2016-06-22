@@ -31,7 +31,7 @@ public class ServerHandler {
     private DataInputStream sendFromServer;
     private DataOutputStream sendToServer;
     private String username = null;
-    private String address = "140.134.226.181";
+    private String address = "192.168.0.110";
     private Handler mHandler = new Handler();
     private static boolean isLogin = false;
     private int port = 8766;

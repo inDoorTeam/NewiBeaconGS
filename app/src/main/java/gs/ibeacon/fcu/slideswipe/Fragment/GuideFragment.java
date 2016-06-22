@@ -19,6 +19,7 @@ import java.util.List;
 
 import gs.ibeacon.fcu.slideswipe.*;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
+import me.drakeet.materialdialog.MaterialDialog;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -86,7 +87,7 @@ public class GuideFragment extends Fragment {
 
 
 
-        final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
+        final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
         List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
         try {
             for (int i = 0; i < l.size(); i++) {
@@ -119,12 +120,13 @@ public class GuideFragment extends Fragment {
                 dialog.dismiss();
             }
         });
+        MaterialDialog m = new MaterialDialog(getActivity());
         locationListDialog.setAdapter(locationListAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 String friendName = locationListAdapter.getItem(which);
                 //String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
-                MainActivity.mainActivity.guideToTarget(friendName);
+                MainActivity.mainActivity.guideToTarget(friendName, 1);
             }
         });
 

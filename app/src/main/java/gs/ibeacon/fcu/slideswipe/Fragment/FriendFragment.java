@@ -86,7 +86,7 @@ public class FriendFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View v = inflater.inflate(R.layout.fragment_friend, container, false);
-        friendListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.select_dialog_singlechoice);
+        friendListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
         friendListButton = (Button) v.findViewById(R.id.buttonFriendList);
         friendListButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -121,7 +121,7 @@ public class FriendFragment extends Fragment {
             public void onClick(DialogInterface dialog, int which) {
                 String friendName = friendListAdapter.getItem(which);
                 String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
-                MainActivity.mainActivity.guideToTarget(friendLocation);
+                MainActivity.mainActivity.guideToTarget(friendLocation, 2);
             }
         });
         JSONObject findFriendJSONObject = new JSONObject();

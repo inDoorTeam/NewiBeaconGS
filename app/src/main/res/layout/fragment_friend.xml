@@ -5,11 +5,6 @@
     tools:context="gs.ibeacon.fcu.slideswipe.Fragment.FriendFragment">
 
     <!-- TODO: Update blank fragment layout -->
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:textColor="@color/textColor"
-        android:text="@string/title_friend" />
 
     <Button
         android:layout_width="wrap_content"
