@@ -487,7 +487,7 @@ public class MainActivity extends AppCompatActivity
                                 public void onClick(List<LocationRegion> locationRegions) {
                                     if (mSailsMapView.getRoutingManager().getStartRegion() != null) {
                                         LocationRegion lr = locationRegions.get(0);
-                                        mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.map_destination)));
+                                        mSailsMapView.getRoutingManager().setTargetMakerDrawable(Marker.boundCenterBottom(getDrawable(R.drawable.ic_dest)));
                                         mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
                                         mSailsMapView.getRoutingManager().setTargetRegion(lr);
                                         mSailsMapView.getRoutingManager().enableHandler();
@@ -608,7 +608,7 @@ public class MainActivity extends AppCompatActivity
             int image = 0;
             switch(imageView){
                 case 1:
-                    image = R.drawable.map_destination;
+                    image = R.drawable.ic_dest;
                     break;
                 case 2:
                     image = R.drawable.ic_search_user;
@@ -617,11 +617,11 @@ public class MainActivity extends AppCompatActivity
                     image = R.drawable.ic_item;
                     break;
                 case 4: // 人對車
-                    image = R.drawable.ic_cart;
+                    image = R.drawable.ic_blue_cart;
                     break;
                 case 5: // 車對人
-                    image = R.drawable.start_point;
-                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_cart)));
+                    image = R.drawable.ic_user;
+                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_blue_cart)));
                     break;
             }
 

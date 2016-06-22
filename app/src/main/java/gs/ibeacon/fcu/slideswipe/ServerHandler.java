@@ -146,6 +146,7 @@ public class ServerHandler {
                                             }
                                             DLog.d(TAG, "USER_LOCATION : " + userLocation);
                                             MainActivity.mainActivity.guideToTarget(userLocation, 4);
+                                            CartFragment.setLocationText(userLocation);
                                         }
                                     });
                                     break;

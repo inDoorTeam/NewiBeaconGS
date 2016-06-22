@@ -9,6 +9,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -45,6 +46,7 @@ public class CartFragment extends Fragment implements View.OnClickListener{
     private Button backwardutton = null;
     private Button stopButton = null;
     private Button guideToTargetButton = null;
+    private static TextView targetLocationText = null;
     private BluetoothService bluetoothService;
     public CartFragment() {
         // Required empty public constructor
@@ -89,6 +91,9 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         DLog.d(TAG, "onCreateView");
 
         View v = inflater.inflate(R.layout.fragment_cart, container, false);
+
+        targetLocationText = (TextView) v.findViewById(R.id.cartLocationText);
+
 
         rightButton = (Button) v.findViewById(R.id.btnR);
         leftButton = (Button) v.findViewById(R.id.btnL);
@@ -154,6 +159,7 @@ public class CartFragment extends Fragment implements View.OnClickListener{
                     DLog.d(TAG, "TargetButton");
                     if (MainActivity.mainActivity.getBindingState()) {
                         MainActivity.mainActivity.guideToTarget(targetLocation, 5);
+                        targetLocationText.setText("使用者位置 : " + targetLocation);
                     } else {
                         DLog.d(TAG, "TargetButton");
                         try {
@@ -186,8 +192,7 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
     }
-    public static void guide(String s){
-        DLog.d(TAG, "guide : " + s);
-        MainActivity.mainActivity.guideToTarget(s, 4);
+    public static void setLocationText(String location){
+        targetLocationText.setText("推車位置 : " + location);
     }
 }
