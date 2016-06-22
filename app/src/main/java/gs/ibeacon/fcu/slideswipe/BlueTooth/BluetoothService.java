@@ -48,6 +48,7 @@ public class BluetoothService {
                 bindingJSONObject.put(JSON.KEY_STATE, JSON.STATE_CAR_BINDING);
                 bindingJSONObject.put(JSON.KEY_BINDING, true);
                 serverHandler.sendToServer(bindingJSONObject);
+                MainActivity.mainActivity.setBindingState(true);
             }
             DLog.d(TAG, "藍芽已連線");
         }

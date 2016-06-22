@@ -10,8 +10,12 @@ import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
 import android.widget.Button;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import gs.ibeacon.fcu.slideswipe.*;
 import gs.ibeacon.fcu.slideswipe.BlueTooth.BluetoothService;
+import gs.ibeacon.fcu.slideswipe.JSON.JSON;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
 
 /**
@@ -34,12 +38,13 @@ public class CartFragment extends Fragment implements View.OnClickListener{
 
     private OnFragmentInteractionListener mListener;
 
-
+    public static String targetLocation;
     private Button leftButton = null;
     private Button rightButton = null;
     private Button forwardButton = null;
     private Button backwardutton = null;
     private Button stopButton = null;
+    private Button guideToTargetButton = null;
     private BluetoothService bluetoothService;
     public CartFragment() {
         // Required empty public constructor
@@ -90,13 +95,14 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         forwardButton = (Button) v.findViewById(R.id.btnU);
         backwardutton = (Button) v.findViewById(R.id.btnD);
         stopButton = (Button) v.findViewById(R.id.btnS);
+        guideToTargetButton = (Button) v.findViewById(R.id.guideToTargetButton);
 
         rightButton.setOnClickListener(this);
         leftButton.setOnClickListener(this);
         forwardButton.setOnClickListener(this);
         backwardutton.setOnClickListener(this);
         stopButton.setOnClickListener(this);
-
+        guideToTargetButton.setOnClickListener(this);
 
         return v;
     }
@@ -126,25 +132,43 @@ public class CartFragment extends Fragment implements View.OnClickListener{
 
     @Override
     public void onClick(View v) {
-        if(!bluetoothService.isConnected())
-            return;
         int id = v.getId();
-        switch(id){
-            case R.id.btnU:
-                bluetoothService.writeData("u");
-                break;
-            case R.id.btnD:
-                bluetoothService.writeData("d");
-                break;
-            case R.id.btnL:
-                bluetoothService.writeData("l");
-                break;
-            case R.id.btnR:
-                bluetoothService.writeData("r");
-                break;
-            case R.id.btnS:
-                bluetoothService.writeData("s");
-                break;
+        try {
+            switch (id) {
+                case R.id.btnU:
+                    bluetoothService.writeData("u");
+                    break;
+                case R.id.btnD:
+                    bluetoothService.writeData("d");
+                    break;
+                case R.id.btnL:
+                    bluetoothService.writeData("l");
+                    break;
+                case R.id.btnR:
+                    bluetoothService.writeData("r");
+                    break;
+                case R.id.btnS:
+                    bluetoothService.writeData("s");
+                    break;
+                case R.id.guideToTargetButton:
+                    DLog.d(TAG, "TargetButton");
+                    if (MainActivity.mainActivity.getBindingState()) {
+                        MainActivity.mainActivity.guideToTarget(targetLocation, 5);
+                    } else {
+                        DLog.d(TAG, "TargetButton");
+                        try {
+                            JSONObject TargetLocationJSONObject = new JSONObject();
+                            TargetLocationJSONObject.put(JSON.KEY_STATE, JSON.STATE_FIND_TARGET_LOCATION);
+                            ServerHandler.getInstance().sendToServer(TargetLocationJSONObject);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+                    break;
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
         }
     }
 
@@ -161,5 +185,9 @@ public class CartFragment extends Fragment implements View.OnClickListener{
     public interface OnFragmentInteractionListener {
         // TODO: Update argument type and name
         void onFragmentInteraction(Uri uri);
+    }
+    public static void guide(String s){
+        DLog.d(TAG, "guide : " + s);
+        MainActivity.mainActivity.guideToTarget(s, 4);
     }
 }

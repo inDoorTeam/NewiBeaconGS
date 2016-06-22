@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity
     private TextView rssiText = null;
     private TextView majorText = null;
     private TextView minorText = null;
-
+    private boolean binding = false;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d(TAG, "onCreate");
@@ -596,6 +596,7 @@ public class MainActivity extends AppCompatActivity
         }
     };
     public void guideToTarget(String targetLocation, int imageView){
+        DLog.d(TAG, "Guide to : " + targetLocation);
         try {
             locationRegions = mSails.findRegionByLabel(myLocation);
             mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
@@ -610,13 +611,17 @@ public class MainActivity extends AppCompatActivity
                     image = R.drawable.map_destination;
                     break;
                 case 2:
-                    image = R.drawable.ic_friend;
+                    image = R.drawable.ic_search_user;
                     break;
                 case 3:
                     image = R.drawable.ic_item;
                     break;
-                case 4:
+                case 4: // 人對車
                     image = R.drawable.ic_cart;
+                    break;
+                case 5: // 車對人
+                    image = R.drawable.start_point;
+                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_cart)));
                     break;
             }
 
@@ -625,7 +630,6 @@ public class MainActivity extends AppCompatActivity
             mSailsMapView.getRoutingManager().getPathPaint().setColor(0xFF85b038);
             mSailsMapView.getRoutingManager().setTargetRegion(lr);
             mSailsMapView.getRoutingManager().enableHandler();
-
         }
         catch (Exception e){
             e.printStackTrace();
@@ -633,5 +637,11 @@ public class MainActivity extends AppCompatActivity
     }
     public SAILS getSails(){
         return mSails;
+    }
+    public void setBindingState(boolean binding){
+        this.binding = binding;
+    }
+    public boolean getBindingState(){
+        return binding;
     }
 }
