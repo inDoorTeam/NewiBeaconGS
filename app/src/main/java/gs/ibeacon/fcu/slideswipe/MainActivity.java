@@ -466,7 +466,7 @@ public class MainActivity extends AppCompatActivity
                                     mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.start_point)));
                                     myLocation = locationRegions.get(0).label;
                                     MainActivity.this.locationRegions = mSails.findRegionByLabel(myLocation);
-                                    rssiText.setText( "You are at : " + myLocation);
+                                    rssiText.setText( "當前位置 : " + myLocation);
                                     JSONObject ibeaconJSONObject = new JSONObject();
                                     if(myLocation != null) {
                                         try {
@@ -591,7 +591,7 @@ public class MainActivity extends AppCompatActivity
 //            majorText.setText("Major : " + Major);
 //            minorText.setText("Minor : " + Minor);
             if(myLocation != null){
-                rssiText.setText( "You are at : " + myLocation);
+                rssiText.setText( "當前位置 : " + myLocation);
             }
         }
     };

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 
 import com.sails.engine.LocationRegion;
 
@@ -83,7 +84,7 @@ public class GuideFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_guide, container, false);
+        final View v = inflater.inflate(R.layout.fragment_guide, container, false);
 
 
 
@@ -124,9 +125,10 @@ public class GuideFragment extends Fragment {
         locationListDialog.setAdapter(locationListAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String friendName = locationListAdapter.getItem(which);
+                String guideLocation = locationListAdapter.getItem(which);
                 //String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
-                MainActivity.mainActivity.guideToTarget(friendName, 1);
+                MainActivity.mainActivity.guideToTarget(guideLocation, 1);
+                ( (TextView) (v.findViewById(R.id.guideLocationText))).setText("目的地 : " + guideLocation);
             }
         });
 

@@ -12,6 +12,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.TextView;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -85,7 +86,7 @@ public class FriendFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View v = inflater.inflate(R.layout.fragment_friend, container, false);
+        final View v = inflater.inflate(R.layout.fragment_friend, container, false);
         friendListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
         friendListButton = (Button) v.findViewById(R.id.buttonFriendList);
         friendListButton.setOnClickListener(new View.OnClickListener() {
@@ -122,6 +123,7 @@ public class FriendFragment extends Fragment {
                 String friendName = friendListAdapter.getItem(which);
                 String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
                 MainActivity.mainActivity.guideToTarget(friendLocation, 2);
+                ( (TextView) (v.findViewById(R.id.friendLocationText))).setText("好友位置 : " + friendLocation);
             }
         });
         JSONObject findFriendJSONObject = new JSONObject();
