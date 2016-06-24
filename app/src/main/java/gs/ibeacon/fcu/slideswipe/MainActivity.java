@@ -11,6 +11,7 @@ import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -70,6 +71,7 @@ public class MainActivity extends AppCompatActivity
     private NavigationView navigationView;
     private MenuItem imgItem = null;
     private MenuItem logItem = null;
+    private MenuItem ipConfigItem = null;
     private Switch btSwitch;
     private TextView userID;
     private TextView helloText;
@@ -77,6 +79,7 @@ public class MainActivity extends AppCompatActivity
     public static MainActivity mainActivity;
     private MaterialDialog loginDialog;
     private MaterialDialog logoutDialog;
+    private MaterialDialog ipConfigDialog;
 
     private static SAILS mSails;
     private static SAILSMapView mSailsMapView;
@@ -101,6 +104,7 @@ public class MainActivity extends AppCompatActivity
 
     private int pathColor = 0xFF46A3FF;
     private boolean isLoadedMap = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         DLog.d(TAG, "onCreate");
@@ -222,6 +226,7 @@ public class MainActivity extends AppCompatActivity
         imgItem.setIcon(R.drawable.ic_bt);
 
         logItem = menu.findItem(R.id.item_login);
+        ipConfigItem = menu.findItem(R.id.item_ipConfig);
         btSwitch = (Switch) menu.findItem(R.id.item_switch).getActionView().findViewById(R.id.switchofbt);
         btSwitch.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
@@ -244,58 +249,8 @@ public class MainActivity extends AppCompatActivity
             btSwitch.setChecked(true);
             imgItem.setIcon(R.drawable.ic_bt2);
         }
-
-        final View viewLogin = LayoutInflater.from(this).inflate(R.layout.login, null);
-        loginDialog = new MaterialDialog(this);
-        loginDialog.setPositiveButton("登入", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                final AlertDialog msgLoading = new SpotsDialog(MainActivity.this, R.style.loginDialogProgress);
-                loginDialog.dismiss();
-                DLog.d(TAG, "登入中...");
-                snackMsg("登入中...");
-                if(!serverHandler.isConnected()) {
-                    snackMsg("無法連線至Server");
-                    return;
-                }
-                JSONObject loginJSONObject = new JSONObject();
-                EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
-                EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
-                try {
-                    loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
-                    loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
-                    serverHandler.sendToServer(loginJSONObject);
-                    msgLoading.setTitle("登入中");
-                    msgLoading.setMessage("Waiting...");
-                    msgLoading.show();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                mHandler.postDelayed(new Runnable(){
-                    @Override
-                    public void run() {
-                        if (!serverHandler.isLogin()) {
-                            DLog.d(TAG, "登入失敗");
-                            snackMsg("登入失敗");
-                        } else {
-                            DLog.d(TAG, "登入成功");
-                            snackMsg("登入成功");
-                            userID.setText(serverHandler.getUsername());
-                            helloText.setText("Hello, " + serverHandler.getUsername() + "!");
-                            logItem.setTitle("登出");
-                        }
-
-                        msgLoading.dismiss();
-                    }
-                }, 2000);
-            }
-        }).setNegativeButton("取消", new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                loginDialog.dismiss();
-            }
-        }).setContentView(viewLogin).setCanceledOnTouchOutside(true).setTitle("用戶登入");
-
+        initLoginDialog();
+        initIpConfigDialog();
         logoutDialog = new MaterialDialog(this);
         logoutDialog.setPositiveButton("登出", new View.OnClickListener(){
             @Override
@@ -365,6 +320,9 @@ public class MainActivity extends AppCompatActivity
                     logoutDialog.show();
                 }
                 break;
+            case R.id.item_ipConfig:
+                ipConfigDialog.show();
+                break;
             case R.id.item_bluetooth:
                 snackMsg("連線到藍芽裝置");
                 startActivityForResult(new Intent(this, DeviceListActivity.class), REQUEST_CONNECT_DEVICE);
@@ -373,11 +331,99 @@ public class MainActivity extends AppCompatActivity
         return super.onOptionsItemSelected(item);
     }
 
+    public void initLoginDialog(){
+
+        final View viewLogin = LayoutInflater.from(this).inflate(R.layout.login, null);
+        final EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
+        final EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
+        loginDialog = new MaterialDialog(this);
+        String userName = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE).getString(Config.tempDataUserPwd, null);
+        String userPwd = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE).getString(Config.tempDataUserPwd, null);
+        if(userName != null && userPwd != null) {
+            userEditText.setText(userName);
+            pwdEditText.setText(userPwd);
+        }
+        loginDialog.setPositiveButton("登入", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final AlertDialog msgLoading = new SpotsDialog(MainActivity.this, R.style.loginDialogProgress);
+                loginDialog.dismiss();
+                DLog.d(TAG, "登入中...");
+                snackMsg("登入中...");
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE);
+                sharedPreferences.edit().putString(Config.tempDataUserName, userEditText.getText().toString())
+                        .putString(Config.tempDataUserPwd, pwdEditText.getText().toString()).apply();
+                if(!serverHandler.isConnected()) {
+                    snackMsg("無法連線至Server");
+                    return;
+                }
+                try {
+                    JSONObject loginJSONObject = new JSONObject();
+                    loginJSONObject.put(JSON.KEY_USER_NAME, userEditText.getText());
+                    loginJSONObject.put(JSON.KEY_USER_PWD, pwdEditText.getText());
+                    serverHandler.sendToServer(loginJSONObject);
+                    msgLoading.setTitle("登入中");
+                    msgLoading.setMessage("Waiting...");
+                    msgLoading.show();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                mHandler.postDelayed(new Runnable(){
+                    @Override
+                    public void run() {
+                        if (!serverHandler.isLogin()) {
+                            DLog.d(TAG, "登入失敗");
+                            snackMsg("登入失敗");
+                        } else {
+                            DLog.d(TAG, "登入成功");
+                            snackMsg("登入成功");
+                            userID.setText(serverHandler.getUsername());
+                            helloText.setText("Hello, " + serverHandler.getUsername() + "!");
+                            logItem.setTitle("登出");
+                        }
+
+                        msgLoading.dismiss();
+                    }
+                }, 2000);
+            }
+        }).setNegativeButton("取消", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                loginDialog.dismiss();
+            }
+        }).setContentView(viewLogin).setCanceledOnTouchOutside(true).setTitle("用戶登入");
+
+    }
+    public void initIpConfigDialog(){
+
+        final View viewIpConfig = LayoutInflater.from(this).inflate(R.layout.ip_config, null);
+        final EditText ipEditText = (EditText) viewIpConfig.findViewById(R.id.server_ip);
+        ipConfigDialog = new MaterialDialog(this);
+        String serverIP = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE).getString(Config.tempDataServerIP, null);
+        if(serverIP != null) {
+            ipEditText.setText(serverIP);
+        }
+        ipConfigDialog.setPositiveButton("設置", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ipConfigDialog.dismiss();
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE);
+                sharedPreferences.edit().putString(
+                        Config.tempDataServerIP, ipEditText.getText().toString()).apply();
+            }
+        }).setNegativeButton("取消", new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                ipConfigDialog.dismiss();
+            }
+        }).setContentView(viewIpConfig).setCanceledOnTouchOutside(true).setTitle("IP設定");
+    }
+
     @SuppressWarnings("StatementWithEmptyBody")
     @Override
     public boolean onNavigationItemSelected(MenuItem item) {
-        DLog.d(TAG, "onNavigationItemSelected");
         // Handle navigation view item clicks here.
+        DLog.d(TAG, "onNavigationItemSelected");
         Fragment fragment = null;
         FragmentManager fragmentManager = getFragmentManager();
         findViewById(R.id.welcome).setVisibility(View.INVISIBLE);
@@ -532,7 +578,6 @@ public class MainActivity extends AppCompatActivity
         catch (RemoteException e) {
             e.printStackTrace();
         }
-        //beaconManager.setMonitorNotifier(this);
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
@@ -560,14 +605,15 @@ public class MainActivity extends AppCompatActivity
             DLog.d(TAG, "scanRun");
             if( PreviousMajor != Major || PreviousMinor != Minor ) {
                 JSONObject ibeaconJSONObject = new JSONObject();
-                if (Major == 4369 && Minor == 8738) {
-                    myLocation = "資電234 - 網際網路及軟體工程學程實驗室";
-                } else if(Major == 43690 && Minor == 65505){
-                    myLocation = "資電201 - 資訊系辦公室";
-                } else if(Major == 257 && Minor == 65505){
-                    myLocation = "資電222 - 第三國際會議廳";
+                if (Major == Config.MAJOR1 && Minor == Config.MINOR1) {
+                    myLocation = Config.LOCATIONLABEL1;
                 }
-
+                else if(Major == Config.MAJOR2 && Minor == Config.MINOR2) {
+                    myLocation = Config.LOCATIONLABEL2;
+                }
+                else if(Major == Config.MAJOR3 && Minor == Config.MINOR3) {
+                    myLocation = Config.LOCATIONLABEL3;
+                }
                 if(myLocation != null) {
                     locationRegions = mSails.findRegionByLabel(myLocation);
                     try {
@@ -585,7 +631,6 @@ public class MainActivity extends AppCompatActivity
             PreviousRssi = Rssi;
             PreviousMajor = Major;
             PreviousMinor = Minor;
-
             if(myLocation != null){
                 rssiText.setText( "當前位置 : " + myLocation);
                 try {

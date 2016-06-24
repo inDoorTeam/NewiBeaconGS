@@ -26,7 +26,6 @@ public class ServerHandler {
     private DataInputStream sendFromServer;
     private DataOutputStream sendToServer;
     private String username = null;
-    private String address = "140.134.226.181";
     private Handler mHandler = new Handler();
     private static boolean isLogin = false;
     private int port = 8766;
@@ -45,8 +44,10 @@ public class ServerHandler {
         @Override
         public void run() {
             DLog.d(TAG, "connectToServerRun");
+            String serverIP = MainActivity.mainActivity.getSharedPreferences(Config.tempDataFileName, MainActivity.mainActivity.MODE_PRIVATE).getString(Config.tempDataServerIP, null);
+            serverIP = serverIP == null ? Config.serverIP : serverIP;
             try {
-                clientSocket = new Socket(InetAddress.getByName(address), port);
+                clientSocket = new Socket(InetAddress.getByName(serverIP), port);
                 sendToServer = new DataOutputStream( clientSocket.getOutputStream() );
                 sendFromServer = new DataInputStream( clientSocket.getInputStream() );
                 JSONObject receiveObject;
@@ -92,7 +93,6 @@ public class ServerHandler {
                                     mHandler.post(new Runnable() {
                                         @Override
                                         public void run() {
-
                                             FriendFragment.friendListAdapter.clear();
                                             FriendFragment.friendNameList.clear();
                                             FriendFragment.friendLocList.clear();
