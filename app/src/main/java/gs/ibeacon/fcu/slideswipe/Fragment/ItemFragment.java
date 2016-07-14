@@ -1,16 +1,25 @@
 package gs.ibeacon.fcu.slideswipe.Fragment;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.Button;
+import android.widget.TextView;
+
+import org.json.JSONObject;
+
+import java.util.ArrayList;
 
 import gs.ibeacon.fcu.slideswipe.*;
+import gs.ibeacon.fcu.slideswipe.JSON.JSON;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
 
 /**
@@ -30,7 +39,13 @@ public class ItemFragment extends Fragment {
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
+    private static ItemFragment itemFragment;
+    public static ArrayAdapter<String> itemListAdapter = null;
+    private AlertDialog.Builder itemListDialog;
+    private Button itemListButton = null;
 
+    private static ArrayList<String> itemNameList;
+    private static ArrayList<String> itemLocationList;
     private OnFragmentInteractionListener mListener;
 
     public ItemFragment() {
@@ -54,10 +69,22 @@ public class ItemFragment extends Fragment {
         fragment.setArguments(args);
         return fragment;
     }
+    public static ItemFragment getInstance(){
+        return itemFragment;
+    }
+    public void modifyItemList(ArrayList<String> itemNameList, ArrayList<String> itemLocationList){
+        itemListAdapter.clear();
+        itemFragment.itemNameList = itemNameList;
+        itemFragment.itemLocationList = itemLocationList;
+        for(int i = 0 ; i < itemNameList.size() ; i++){
+            itemListAdapter.add(itemNameList.get(i) + "\t" + itemLocationList.get(i));
+        }
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        itemFragment = this;
         DLog.d(TAG, "onCreate");
         if (getArguments() != null) {
             mParam1 = getArguments().getString(ARG_PARAM1);
@@ -70,8 +97,40 @@ public class ItemFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_item, container, false);
+
+        View v = inflater.inflate(R.layout.fragment_item, container, false);
+        itemListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
+        itemListButton = (Button) v.findViewById(R.id.buttonItemList);
+        itemListButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                JSONObject askItemJSONObject = new JSONObject();
+                try {
+                    askItemJSONObject.put(JSON.KEY_STATE, JSON.STATE_FIND_ITEM_LIST);
+                    ServerHandler.getInstance().sendToServer(askItemJSONObject);
+                    Thread.sleep(300);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                itemListDialog.show();
+            }
+        });
+        itemListDialog = new AlertDialog.Builder(getActivity());
+        itemListDialog.setTitle("物品清單");
+        itemListDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
+        });
+        itemListDialog.setAdapter(itemListAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+            }
+        });
+        return v;
     }
 
     // TODO: Rename method, update argument and hook method into UI event

@@ -10,10 +10,13 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.ArrayList;
+import java.util.concurrent.RunnableFuture;
 
 import gs.ibeacon.fcu.slideswipe.BlueTooth.BluetoothService;
 import gs.ibeacon.fcu.slideswipe.Fragment.CartFragment;
 import gs.ibeacon.fcu.slideswipe.Fragment.FriendFragment;
+import gs.ibeacon.fcu.slideswipe.Fragment.ItemFragment;
 import gs.ibeacon.fcu.slideswipe.JSON.*;
 import gs.ibeacon.fcu.slideswipe.Log.*;
 
@@ -105,6 +108,27 @@ public class ServerHandler {
                                                     FriendFragment.friendNameList.add(username);
                                                     FriendFragment.friendLocList.add(location);
                                                 }
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    break;
+                                case JSON.STATE_FIND_ITEM_LIST:
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                ArrayList<String> itemNameList = new ArrayList<>();
+                                                ArrayList<String> itemLocationList = new ArrayList<>();
+                                                JSONArray itemListJSONArray = receiveObject.getJSONArray(JSON.KEY_ITEM_LIST);
+                                                for(int index = 0 ; index < itemListJSONArray.length() ; index ++){
+                                                    String itemName = itemListJSONArray.getJSONObject(index).getString(JSON.KEY_ITEM_NAME);
+                                                    String itemLocation = itemListJSONArray.getJSONObject(index).getString(JSON.KEY_LOCATION);
+                                                    itemNameList.add(itemName);
+                                                    itemLocationList.add(itemLocation);
+                                                }
+                                                ItemFragment.getInstance().modifyItemList(itemNameList, itemLocationList);
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }

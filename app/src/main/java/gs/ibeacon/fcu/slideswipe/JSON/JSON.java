@@ -21,7 +21,8 @@ public class JSON {
     public static final String KEY_RESULT = "result";
     public static final String KEY_RESULT_MESSAGE = "resultMessage";
     public static final String KEY_TARGET_LOCATION = "targetLocation";
-
+    public static final String KEY_ITEM_NAME = "itemName";
+    public static final String KEY_ITEM_LIST = "itemList";
 
 
     public static final String KEY_STATE = "STATE" ;
@@ -33,5 +34,7 @@ public class JSON {
     public static final int STATE_CAR_BINDING = 5 ;
     public static final int STATE_USER_MOVE = 6 ;
     public static final int STATE_FIND_TARGET_LOCATION = 7 ;
+    public static final int STATE_FIND_ITEM_LIST = 8 ;
+    public static final int STATE_FIND_ITEM = 9 ;
 
 }
