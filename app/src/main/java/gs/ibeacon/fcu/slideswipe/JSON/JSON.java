@@ -13,7 +13,8 @@ public class JSON {
     public static final String KEY_MAJOR = "MAJOR" ;
     public static final String KEY_MINOR = "MINOR" ;
     public static final String KEY_LOCATION = "LOCATION" ;
-    public static final String KEY_USER_LIST = "用戶清單";
+    public static final String KEY_FRIEND_LIST = "好友清單";
+    public static final String KEY_OTHERUSER_LIST = "其他用戶清單";
     public static final String KEY_BINDING = "BINDING";
 
 
@@ -36,5 +37,10 @@ public class JSON {
     public static final int STATE_FIND_TARGET_LOCATION = 7 ;
     public static final int STATE_FIND_ITEM_LIST = 8 ;
     public static final int STATE_FIND_ITEM = 9 ;
+
+
+
+    public static final String MESSAGE_NOLOATION = "noLocation";
+
 
 }

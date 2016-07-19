@@ -47,7 +47,7 @@ public class ServerHandler {
         @Override
         public void run() {
             DLog.d(TAG, "connectToServerRun");
-            String serverIP = MainActivity.mainActivity.getSharedPreferences(Config.tempDataFileName, MainActivity.mainActivity.MODE_PRIVATE).getString(Config.tempDataServerIP, null);
+            String serverIP = MainActivity.mainActivity.getSharedPreferences(Config.TEMPDATAFILENAME, MainActivity.mainActivity.MODE_PRIVATE).getString(Config.tempDataServerIP, null);
             serverIP = serverIP == null ? Config.serverIP : serverIP;
             try {
                 clientSocket = new Socket(InetAddress.getByName(serverIP), port);
@@ -100,13 +100,21 @@ public class ServerHandler {
                                             FriendFragment.friendNameList.clear();
                                             FriendFragment.friendLocList.clear();
                                             try {
-                                                JSONArray friendLocationJSONArray = receiveObject.getJSONArray(JSON.KEY_USER_LIST);
+                                                JSONArray friendLocationJSONArray = receiveObject.getJSONArray(JSON.KEY_FRIEND_LIST);
+                                                JSONArray otherUserJSONArray = receiveObject.getJSONArray(JSON.KEY_OTHERUSER_LIST);
+
                                                 for(int index = 0 ; index < friendLocationJSONArray.length() ; index ++){
                                                     String username = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME);
+                                                    FriendFragment.friendListAdapter.add(Config.FRIENDFACEICON + username);
+                                                    FriendFragment.friendNameList.add(username);
                                                     String location = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_LOCATION);
+                                                    FriendFragment.friendLocList.add(location);
+                                                }
+                                                for(int index = 0 ; index < otherUserJSONArray.length() ; index ++){
+                                                    String username = otherUserJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME);
                                                     FriendFragment.friendListAdapter.add(username);
                                                     FriendFragment.friendNameList.add(username);
-                                                    FriendFragment.friendLocList.add(location);
+                                                    FriendFragment.friendLocList.add(JSON.MESSAGE_NOLOATION);
                                                 }
                                             } catch (JSONException e) {
                                                 e.printStackTrace();

@@ -119,10 +119,15 @@ public class FriendFragment extends Fragment {
         friendList.setAdapter(friendListAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                String friendName = friendListAdapter.getItem(which);
-                String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
-                MainActivity.mainActivity.guideToTarget(friendLocation, 2);
-                ( (TextView) (v.findViewById(R.id.friendLocationText))).setText("好友位置 : " + friendLocation);
+                if (friendListAdapter.getItem(which).substring(0, 2).equals(Config.FRIENDFACEICON)) { // 好友
+                    String friendName = friendListAdapter.getItem(which).substring(2);
+                    String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
+                    MainActivity.mainActivity.guideToTarget(friendLocation, 2);
+                    ((TextView) (v.findViewById(R.id.friendLocationText))).setText("好友位置 : " + friendLocation);
+                }
+                else{ // 非好友
+                    JSONObject askOtherFriendLocation = new JSONObject();
+                }
             }
         });
         JSONObject findFriendJSONObject = new JSONObject();

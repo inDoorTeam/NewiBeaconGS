@@ -337,8 +337,8 @@ public class MainActivity extends AppCompatActivity
         final EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
         final EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
         loginDialog = new MaterialDialog(this);
-        String userName = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE).getString(Config.tempDataUserPwd, null);
-        String userPwd = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE).getString(Config.tempDataUserPwd, null);
+        String userName = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE).getString(Config.tempDataUserPwd, null);
+        String userPwd = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE).getString(Config.tempDataUserPwd, null);
         if(userName != null && userPwd != null) {
             userEditText.setText(userName);
             pwdEditText.setText(userPwd);
@@ -350,7 +350,7 @@ public class MainActivity extends AppCompatActivity
                 loginDialog.dismiss();
                 DLog.d(TAG, "登入中...");
                 snackMsg("登入中...");
-                SharedPreferences sharedPreferences = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE);
                 sharedPreferences.edit().putString(Config.tempDataUserName, userEditText.getText().toString())
                         .putString(Config.tempDataUserPwd, pwdEditText.getText().toString()).apply();
                 if(!serverHandler.isConnected()) {
@@ -399,7 +399,7 @@ public class MainActivity extends AppCompatActivity
         final View viewIpConfig = LayoutInflater.from(this).inflate(R.layout.ip_config, null);
         final EditText ipEditText = (EditText) viewIpConfig.findViewById(R.id.server_ip);
         ipConfigDialog = new MaterialDialog(this);
-        String serverIP = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE).getString(Config.tempDataServerIP, null);
+        String serverIP = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE).getString(Config.tempDataServerIP, null);
         if(serverIP != null) {
             ipEditText.setText(serverIP);
         }
@@ -407,7 +407,7 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 ipConfigDialog.dismiss();
-                SharedPreferences sharedPreferences = getSharedPreferences(Config.tempDataFileName, MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE);
                 sharedPreferences.edit().putString(
                         Config.tempDataServerIP, ipEditText.getText().toString()).apply();
             }

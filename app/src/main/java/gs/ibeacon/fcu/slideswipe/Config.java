@@ -4,12 +4,12 @@ package gs.ibeacon.fcu.slideswipe;
  * Created by bing on 2016/6/24.
  */
 public class Config {
-    public static String tempDataFileName = "tempData";
+    public static String TEMPDATAFILENAME = "tempData";
     public static String tempDataUserName = "userName";
     public static String tempDataUserPwd = "userPwd";
     public static String tempDataServerIP = "serverIP";
     public static String serverIP = "140.134.226.181";
-
+    public static String FRIENDFACEICON = "\uD83D\uDC65";
     public static int MAJOR1 = 1;
     public static int MAJOR2 = 1;
     public static int MAJOR3 = 1;
