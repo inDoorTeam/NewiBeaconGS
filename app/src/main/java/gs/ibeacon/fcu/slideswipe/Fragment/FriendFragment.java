@@ -119,7 +119,7 @@ public class FriendFragment extends Fragment {
         friendList.setAdapter(friendListAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                if (friendListAdapter.getItem(which).substring(0, 2).equals(Config.FRIENDFACEICON)) { // 好友
+                if (friendListAdapter.getItem(which).substring(0, 2).equals(Config.FRIEND_FACE_ICON)) { // 好友
                     String friendName = friendListAdapter.getItem(which).substring(2);
                     String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
                     MainActivity.mainActivity.guideToTarget(friendLocation, 2);

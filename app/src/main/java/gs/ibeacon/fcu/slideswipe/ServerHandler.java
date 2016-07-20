@@ -1,5 +1,7 @@
 package gs.ibeacon.fcu.slideswipe;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Handler;
 
 import org.json.JSONArray;
@@ -11,7 +13,6 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.ArrayList;
-import java.util.concurrent.RunnableFuture;
 
 import gs.ibeacon.fcu.slideswipe.BlueTooth.BluetoothService;
 import gs.ibeacon.fcu.slideswipe.Fragment.CartFragment;
@@ -24,14 +25,13 @@ import gs.ibeacon.fcu.slideswipe.Log.*;
  * Created by bing on 2016/6/10.
  */
 public class ServerHandler {
-    public static Socket clientSocket = new Socket();
+    public Socket clientSocket = new Socket();
     public static final String TAG = "ServerHandler";
     private DataInputStream sendFromServer;
     private DataOutputStream sendToServer;
     private String username = null;
     private Handler mHandler = new Handler();
     private static boolean isLogin = false;
-    private int port = 8766;
     private static ServerHandler serverHandler = null;
     public static ServerHandler getInstance() {
         if(serverHandler == null || !isLogin)
@@ -47,10 +47,10 @@ public class ServerHandler {
         @Override
         public void run() {
             DLog.d(TAG, "connectToServerRun");
-            String serverIP = MainActivity.mainActivity.getSharedPreferences(Config.TEMPDATAFILENAME, MainActivity.mainActivity.MODE_PRIVATE).getString(Config.tempDataServerIP, null);
+            String serverIP = MainActivity.mainActivity.getSharedPreferences(Config.TEMP_DATA_FILE_NAME, MainActivity.mainActivity.MODE_PRIVATE).getString(Config.TEMP_DATA_SERVER_IP, null);
             serverIP = serverIP == null ? Config.serverIP : serverIP;
             try {
-                clientSocket = new Socket(InetAddress.getByName(serverIP), port);
+                clientSocket = new Socket(InetAddress.getByName(serverIP), Config.PORT);
                 sendToServer = new DataOutputStream( clientSocket.getOutputStream() );
                 sendFromServer = new DataInputStream( clientSocket.getInputStream() );
                 JSONObject receiveObject;
@@ -105,7 +105,7 @@ public class ServerHandler {
 
                                                 for(int index = 0 ; index < friendLocationJSONArray.length() ; index ++){
                                                     String username = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME);
-                                                    FriendFragment.friendListAdapter.add(Config.FRIENDFACEICON + username);
+                                                    FriendFragment.friendListAdapter.add(Config.FRIEND_FACE_ICON + username);
                                                     FriendFragment.friendNameList.add(username);
                                                     String location = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_LOCATION);
                                                     FriendFragment.friendLocList.add(location);
@@ -182,6 +182,45 @@ public class ServerHandler {
                                         }
                                     });
                                     break;
+                                case JSON.STATE_ASK_LOCATION_PERMISSION:
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try{
+                                                String otherusername = receiveObject.getString(JSON.KEY_USER_NAME);
+                                                final AlertDialog.Builder askLocationDialog = new AlertDialog.Builder(MainActivity.mainActivity);
+                                                final JSONObject sendJSONObject = new JSONObject();
+                                                sendJSONObject.put(JSON.KEY_STATE, JSON.STATE_RETURN_ASK_LOCATION_PERMISSION);
+                                                askLocationDialog.setPositiveButton("允許", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        try {
+                                                            sendJSONObject.put(JSON.KEY_OTHER_USER_PERMISION, true);
+                                                            ServerHandler.getInstance().sendToServer(sendJSONObject);
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                    }
+                                                }).setPositiveButton("不要", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        try {
+                                                            sendJSONObject.put(JSON.KEY_OTHER_USER_PERMISION, true);
+                                                            ServerHandler.getInstance().sendToServer(sendJSONObject);
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                        dialog.dismiss();
+                                                    }
+                                                }).setMessage(otherusername + "想知道你的位置").setTitle("位置請求");
+
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    break;
+
                             }
                         }
                     }

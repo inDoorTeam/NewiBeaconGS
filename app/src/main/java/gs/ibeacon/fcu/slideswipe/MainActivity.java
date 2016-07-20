@@ -24,7 +24,6 @@ import android.os.Vibrator;
 //import android.support.design.widget.FloatingActionButton;
 
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.NotificationCompat;
 import android.text.Html;
@@ -55,7 +54,6 @@ import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.Collection;
@@ -317,7 +315,7 @@ public class MainActivity extends AppCompatActivity
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                snackMsg("連線" + (serverHandler.clientSocket.isConnected() ? "成功" : "失敗"));
+                snackMsg("連線" + (serverHandler.isConnected() ? "成功" : "失敗"));
 
                 if(!serverHandler.isLogin()) {
                     snackMsg("登入以使用會員功能");
@@ -345,8 +343,8 @@ public class MainActivity extends AppCompatActivity
         final EditText userEditText = (EditText) viewLogin.findViewById(R.id.usr_input);
         final EditText pwdEditText = (EditText) viewLogin.findViewById(R.id.pwd_input);
         loginDialog = new MaterialDialog(this);
-        String userName = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE).getString(Config.tempDataUserPwd, null);
-        String userPwd = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE).getString(Config.tempDataUserPwd, null);
+        String userName = getSharedPreferences(Config.TEMP_DATA_FILE_NAME, MODE_PRIVATE).getString(Config.TEMP_DATA_USER_PWD, null);
+        String userPwd = getSharedPreferences(Config.TEMP_DATA_FILE_NAME, MODE_PRIVATE).getString(Config.TEMP_DATA_USER_PWD, null);
         if(userName != null && userPwd != null) {
             userEditText.setText(userName);
             pwdEditText.setText(userPwd);
@@ -358,9 +356,9 @@ public class MainActivity extends AppCompatActivity
                 loginDialog.dismiss();
                 DLog.d(TAG, "登入中...");
                 snackMsg("登入中...");
-                SharedPreferences sharedPreferences = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE);
-                sharedPreferences.edit().putString(Config.tempDataUserName, userEditText.getText().toString())
-                        .putString(Config.tempDataUserPwd, pwdEditText.getText().toString()).apply();
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.TEMP_DATA_FILE_NAME, MODE_PRIVATE);
+                sharedPreferences.edit().putString(Config.TEMP_DATA_USER_NAME, userEditText.getText().toString())
+                        .putString(Config.TEMP_DATA_USER_PWD, pwdEditText.getText().toString()).apply();
                 if(!serverHandler.isConnected()) {
                     snackMsg("無法連線至Server");
                     return;
@@ -407,7 +405,7 @@ public class MainActivity extends AppCompatActivity
         final View viewIpConfig = LayoutInflater.from(this).inflate(R.layout.ip_config, null);
         final EditText ipEditText = (EditText) viewIpConfig.findViewById(R.id.server_ip);
         ipConfigDialog = new MaterialDialog(this);
-        String serverIP = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE).getString(Config.tempDataServerIP, null);
+        String serverIP = getSharedPreferences(Config.TEMP_DATA_FILE_NAME, MODE_PRIVATE).getString(Config.TEMP_DATA_SERVER_IP, null);
         if(serverIP != null) {
             ipEditText.setText(serverIP);
         }
@@ -415,9 +413,9 @@ public class MainActivity extends AppCompatActivity
             @Override
             public void onClick(View v) {
                 ipConfigDialog.dismiss();
-                SharedPreferences sharedPreferences = getSharedPreferences(Config.TEMPDATAFILENAME, MODE_PRIVATE);
+                SharedPreferences sharedPreferences = getSharedPreferences(Config.TEMP_DATA_FILE_NAME, MODE_PRIVATE);
                 sharedPreferences.edit().putString(
-                        Config.tempDataServerIP, ipEditText.getText().toString()).apply();
+                        Config.TEMP_DATA_SERVER_IP, ipEditText.getText().toString()).apply();
             }
         }).setNegativeButton("取消", new View.OnClickListener() {
             @Override

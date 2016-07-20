@@ -1,3 +1,2 @@
 # NewiBeaconGS
 Developing
-(UI ONLY)
