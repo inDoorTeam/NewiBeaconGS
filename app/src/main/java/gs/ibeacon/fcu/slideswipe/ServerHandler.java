@@ -12,6 +12,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.security.Key;
 import java.util.ArrayList;
 
 import gs.ibeacon.fcu.slideswipe.BlueTooth.BluetoothService;
@@ -81,7 +82,7 @@ public class ServerHandler {
                 while (true) {
                     final JSONObject receiveObject;
                     if (clientSocket.isConnected()) {
-                        String receiveMessage = sendFromServer.readUTF();
+                        final String receiveMessage = sendFromServer.readUTF();
                         DLog.d(TAG, receiveMessage + "\n" );
                         if (receiveMessage != null) {
                             receiveObject = new JSONObject(receiveMessage);
@@ -191,6 +192,7 @@ public class ServerHandler {
                                                 final AlertDialog.Builder askLocationDialog = new AlertDialog.Builder(MainActivity.mainActivity);
                                                 final JSONObject sendJSONObject = new JSONObject();
                                                 sendJSONObject.put(JSON.KEY_STATE, JSON.STATE_RETURN_ASK_LOCATION_PERMISSION);
+                                                sendJSONObject.put(JSON.KEY_USER_NAME, receiveObject.getString(JSON.KEY_USER_NAME));
                                                 askLocationDialog.setPositiveButton("允許", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
@@ -205,14 +207,14 @@ public class ServerHandler {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         try {
-                                                            sendJSONObject.put(JSON.KEY_OTHER_USER_PERMISION, true);
+                                                            sendJSONObject.put(JSON.KEY_OTHER_USER_PERMISION, false);
                                                             ServerHandler.getInstance().sendToServer(sendJSONObject);
                                                         } catch (Exception e) {
                                                             e.printStackTrace();
                                                         }
                                                         dialog.dismiss();
                                                     }
-                                                }).setMessage(otherusername + "想知道你的位置").setTitle("位置請求");
+                                                }).setMessage(otherusername + "想知道你的位置").setTitle("位置請求").show();
 
                                             } catch (JSONException e) {
                                                 e.printStackTrace();

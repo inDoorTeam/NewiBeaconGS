@@ -16,6 +16,7 @@ public class JSON {
     public static final String KEY_FRIEND_LIST = "好友清單";
     public static final String KEY_OTHERUSER_LIST = "其他用戶清單";
     public static final String KEY_BINDING = "BINDING";
+    public static final String KEY_OTHER_USER = "對方";
 
 
 

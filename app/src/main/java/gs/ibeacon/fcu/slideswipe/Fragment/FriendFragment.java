@@ -133,7 +133,9 @@ public class FriendFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             JSONObject askPermissionJSONObject = new JSONObject();
                             try {
+                                String otherUserName = friendListAdapter.getItem(which);
                                 askPermissionJSONObject.put(JSON.KEY_STATE, JSON.STATE_ASK_LOCATION_PERMISSION);
+                                askPermissionJSONObject.put(JSON.KEY_OTHER_USER, otherUserName);
                             } catch (JSONException e) {
                                 e.printStackTrace();
                             }
@@ -145,7 +147,7 @@ public class FriendFragment extends Fragment {
                         public void onClick(DialogInterface dialog, int which) {
                             dialog.dismiss();
                         }
-                    });
+                    }).show();
                 }
             }
         });
