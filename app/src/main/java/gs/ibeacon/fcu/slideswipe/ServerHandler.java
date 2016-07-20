@@ -104,14 +104,14 @@ public class ServerHandler {
                                                 JSONArray friendLocationJSONArray = receiveObject.getJSONArray(JSON.KEY_FRIEND_LIST);
                                                 JSONArray otherUserJSONArray = receiveObject.getJSONArray(JSON.KEY_OTHERUSER_LIST);
 
-                                                for(int index = 0 ; index < friendLocationJSONArray.length() ; index ++){
+                                                for(int index = 0 ; index < friendLocationJSONArray.length() ; index ++){ // 好友
                                                     String username = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME);
                                                     FriendFragment.friendListAdapter.add(Config.FRIEND_FACE_ICON + username);
                                                     FriendFragment.friendNameList.add(username);
                                                     String location = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_LOCATION);
                                                     FriendFragment.friendLocList.add(location);
                                                 }
-                                                for(int index = 0 ; index < otherUserJSONArray.length() ; index ++){
+                                                for(int index = 0 ; index < otherUserJSONArray.length() ; index ++){ // 非好友
                                                     String username = otherUserJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME);
                                                     FriendFragment.friendListAdapter.add(username);
                                                     FriendFragment.friendNameList.add(username);
@@ -203,7 +203,7 @@ public class ServerHandler {
                                                             e.printStackTrace();
                                                         }
                                                     }
-                                                }).setPositiveButton("不要", new DialogInterface.OnClickListener() {
+                                                }).setNegativeButton("不要", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         try {
@@ -222,7 +222,27 @@ public class ServerHandler {
                                         }
                                     });
                                     break;
+                                case JSON.STATE_RETURN_ASK_LOCATION_PERMISSION:
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            boolean isPermission = false;
+                                            try {
+                                                isPermission = receiveObject.getBoolean(JSON.KEY_OTHER_USER_PERMISION);
+                                                if(isPermission){
+                                                    String targetLocation = null;
+                                                    targetLocation = receiveObject.getString(JSON.KEY_TARGET_LOCATION);
+                                                    MainActivity.mainActivity.guideToTarget(targetLocation, 2);
+                                                }
+                                                else{
 
+                                                }
+                                            } catch (Exception e){
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    break;
                             }
                         }
                     }

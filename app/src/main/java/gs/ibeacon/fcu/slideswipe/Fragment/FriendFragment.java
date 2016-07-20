@@ -109,7 +109,7 @@ public class FriendFragment extends Fragment {
             }
         });
         friendList = new AlertDialog.Builder(getActivity());
-        friendList.setTitle("好友清單");
+        friendList.setTitle("用戶清單");
         friendList.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
@@ -118,7 +118,7 @@ public class FriendFragment extends Fragment {
         });
         friendList.setAdapter(friendListAdapter, new DialogInterface.OnClickListener() {
             @Override
-            public void onClick(DialogInterface dialog, int which) {
+            public void onClick(DialogInterface dialog, final int which) {
                 if (friendListAdapter.getItem(which).substring(0, 2).equals(Config.FRIEND_FACE_ICON)) { // 好友
                     String friendName = friendListAdapter.getItem(which).substring(2);
                     String friendLocation = friendLocList.get(friendNameList.indexOf(friendName));
@@ -130,9 +130,10 @@ public class FriendFragment extends Fragment {
                     checkIfNotFriendDialog.setMessage("要請求非好友位置嗎？");
                     checkIfNotFriendDialog.setPositiveButton("好", new DialogInterface.OnClickListener() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                        public void onClick(DialogInterface dialog, int which2) {
                             JSONObject askPermissionJSONObject = new JSONObject();
                             try {
+                                DLog.d(TAG, "friendList" + friendListAdapter);
                                 String otherUserName = friendListAdapter.getItem(which);
                                 askPermissionJSONObject.put(JSON.KEY_STATE, JSON.STATE_ASK_LOCATION_PERMISSION);
                                 askPermissionJSONObject.put(JSON.KEY_OTHER_USER, otherUserName);
