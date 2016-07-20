@@ -126,7 +126,26 @@ public class FriendFragment extends Fragment {
                     ((TextView) (v.findViewById(R.id.friendLocationText))).setText("好友位置 : " + friendLocation);
                 }
                 else{ // 非好友
-                    JSONObject askOtherFriendLocation = new JSONObject();
+                    AlertDialog.Builder checkIfNotFriendDialog = new AlertDialog.Builder(getActivity());
+                    checkIfNotFriendDialog.setMessage("要請求非好友位置嗎？");
+                    checkIfNotFriendDialog.setPositiveButton("好", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            JSONObject askPermissionJSONObject = new JSONObject();
+                            try {
+                                askPermissionJSONObject.put(JSON.KEY_STATE, JSON.STATE_ASK_LOCATION_PERMISSION);
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                            ServerHandler.getInstance().sendToServer(askPermissionJSONObject);
+                        }
+                    });
+                    checkIfNotFriendDialog.setNegativeButton("不好", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
                 }
             }
         });
