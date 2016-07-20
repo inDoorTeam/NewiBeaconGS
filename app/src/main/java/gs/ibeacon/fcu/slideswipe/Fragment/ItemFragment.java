@@ -14,6 +14,7 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
@@ -77,7 +78,8 @@ public class ItemFragment extends Fragment {
         itemFragment.itemNameList = itemNameList;
         itemFragment.itemLocationList = itemLocationList;
         for(int i = 0 ; i < itemNameList.size() ; i++){
-            itemListAdapter.add(itemNameList.get(i) + "\t" + itemLocationList.get(i));
+            // itemListAdapter.add(itemNameList.get(i) + "\t" + itemLocationList.get(i));
+            itemListAdapter.add(itemNameList.get(i));
         }
     }
 
@@ -128,6 +130,23 @@ public class ItemFragment extends Fragment {
         itemListDialog.setAdapter(itemListAdapter, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
+                JSONObject getItemLocJSONObject = new JSONObject();
+                try {
+                    getItemLocJSONObject.put(JSON.KEY_STATE, JSON.STATE_GET_ITEM_LOCATION);
+                    getItemLocJSONObject.put(JSON.KEY_ITEM_NAME, itemListAdapter.getItem(which));
+                    ServerHandler serverHandler = ServerHandler.getInstance();
+                    if(serverHandler != null && serverHandler.isLogin())
+                        serverHandler.sendToServer(getItemLocJSONObject);
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
             }
         });
         return v;

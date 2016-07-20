@@ -613,6 +613,20 @@ public class MainActivity extends AppCompatActivity
             JSONObject ibeaconJSONObject = new JSONObject();
             if (Major == Config.MAJOR_ITEM) {
                 rssiText.setText("Item Rssi : " + Rssi);
+
+                if (myLocation != null) {
+                    try {
+                        ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_ITEM_IBEACON);
+                        ibeaconJSONObject.put(JSON.KEY_RSSI, Rssi);
+                        ibeaconJSONObject.put(JSON.KEY_MINOR, Minor);
+                        ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
+                        serverHandler.sendToServer(ibeaconJSONObject);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+
                 if(Rssi < -70) {
                     final Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
                     NotificationCompat.Builder builder =
@@ -642,11 +656,11 @@ public class MainActivity extends AppCompatActivity
             }
             else if (Major == Config.MAJOR_LOCATION) {
                 if( PreviousMajor != Major || PreviousMinor != Minor ) {
-                    if (Minor == Config.MINOR1) {
+                    if (Minor == Config.LOCATION_MINOR1) {
                         myLocation = Config.LOCATIONLABEL1;
-                    } else if (Minor == Config.MINOR2) {
+                    } else if (Minor == Config.LOCATION_MINOR2) {
                         myLocation = Config.LOCATIONLABEL2;
-                    } else if (Minor == Config.MINOR3) {
+                    } else if (Minor == Config.LOCATION_MINOR3) {
                         myLocation = Config.LOCATIONLABEL3;
                     }
                     if (myLocation != null) {

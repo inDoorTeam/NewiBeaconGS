@@ -3,6 +3,7 @@ package gs.ibeacon.fcu.slideswipe;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Handler;
+import android.widget.TextView;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -141,6 +142,16 @@ public class ServerHandler {
                                             } catch (JSONException e) {
                                                 e.printStackTrace();
                                             }
+                                        }
+                                    });
+                                    break;
+                                case JSON.STATE_GET_ITEM_LOCATION:
+                                    final String itemLocation = receiveObject.getString(JSON.KEY_ITEM_LOCATION);
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            DLog.d(TAG, "ITEM_LOCATION : " + itemLocation);
+                                            MainActivity.mainActivity.guideToTarget(itemLocation, 3);
                                         }
                                     });
                                     break;

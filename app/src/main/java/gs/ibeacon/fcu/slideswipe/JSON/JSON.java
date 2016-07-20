@@ -25,6 +25,7 @@ public class JSON {
     public static final String KEY_TARGET_LOCATION = "targetLocation";
     public static final String KEY_ITEM_NAME = "itemName";
     public static final String KEY_ITEM_LIST = "itemList";
+    public static final String KEY_ITEM_LOCATION = "itemLocation";
     public static final String KEY_OTHER_USER_PERMISION = "是否允許請求所在位置";
 
 
@@ -38,9 +39,11 @@ public class JSON {
     public static final int STATE_USER_MOVE = 6 ;
     public static final int STATE_FIND_TARGET_LOCATION = 7 ;
     public static final int STATE_FIND_ITEM_LIST = 8 ;
-    public static final int STATE_FIND_ITEM = 9 ;
+    public static final int STATE_SEND_ITEM_IBEACON = 9 ;
     public static final int STATE_ASK_LOCATION_PERMISSION = 10 ;
     public static final int STATE_RETURN_ASK_LOCATION_PERMISSION = 11 ;
+    public static final int STATE_GET_ITEM_LOCATION = 12 ;
+
 
 
     public static final String MESSAGE_NOLOATION = "noLocation";

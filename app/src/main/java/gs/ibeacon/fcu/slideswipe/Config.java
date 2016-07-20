@@ -14,10 +14,10 @@ public class Config {
     public static int MAJOR_LOCATION = 1;
     public static int MAJOR_ITEM = 2;
 
-    public static int MINOR1 = 249;
-    public static int MINOR2 = 250;
-    public static int MINOR3 = 251;
-    public static int MINOR4 = 1;
+    public static int LOCATION_MINOR1 = 249;
+    public static int LOCATION_MINOR2 = 250;
+    public static int LOCATION_MINOR3 = 251;
+    public static int ITEM_MINOR1 = 253;
 
     public static String LOCATIONLABEL1 = "資電201 - 資訊系辦公室";
     public static String LOCATIONLABEL2 = "資電214";
