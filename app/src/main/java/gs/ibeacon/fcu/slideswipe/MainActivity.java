@@ -4,14 +4,19 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Fragment;
 import android.app.FragmentManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 
 import com.getbase.floatingactionbutton.FloatingActionButton;
 import com.getbase.floatingactionbutton.FloatingActionsMenu;
 
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.RemoteException;
@@ -19,7 +24,9 @@ import android.os.Vibrator;
 //import android.support.design.widget.FloatingActionButton;
 
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.TaskStackBuilder;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.NotificationCompat;
 import android.text.Html;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -99,7 +106,6 @@ public class MainActivity extends AppCompatActivity
     private TextView majorText = null;
     private TextView minorText = null;
     private boolean binding = false;
-
     AlertDialog msgLoading = null;
 
     private int pathColor = 0xFF46A3FF;
@@ -201,6 +207,8 @@ public class MainActivity extends AppCompatActivity
 
         mHandler = new Handler();
         beaconManager = BeaconManager.getInstanceForApplication(this);
+        beaconManager.setForegroundScanPeriod(500L);
+        beaconManager.setForegroundBetweenScanPeriod(0L);
         beaconManager.getBeaconParsers().add(new BeaconParser().setBeaconLayout("m:2-3=0215,i:4-19,i:20-21,i:22-23,p:24-24"));
         startScan();
     }
@@ -603,47 +611,73 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void run() {
             DLog.d(TAG, "scanRun");
-            if( PreviousMajor != Major || PreviousMinor != Minor ) {
-                JSONObject ibeaconJSONObject = new JSONObject();
-                if (Major == Config.MAJOR1 && Minor == Config.MINOR1) {
-                    myLocation = Config.LOCATIONLABEL1;
-                }
-                else if(Major == Config.MAJOR2 && Minor == Config.MINOR2) {
-                    myLocation = Config.LOCATIONLABEL2;
-                }
-                else if(Major == Config.MAJOR3 && Minor == Config.MINOR3) {
-                    myLocation = Config.LOCATIONLABEL3;
-                }
-                if(myLocation != null) {
-                    locationRegions = mSails.findRegionByLabel(myLocation);
-                    try {
-                        ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
-                        ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
 
-                    } catch (JSONException e) {
-                        e.printStackTrace();
+            JSONObject ibeaconJSONObject = new JSONObject();
+            if (Major == Config.MAJOR_ITEM) {
+                rssiText.setText("Item Rssi : " + Rssi);
+                if(Rssi < -70) {
+                    final Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                    NotificationCompat.Builder builder =
+                            new NotificationCompat.Builder(MainActivity.this);
+
+                    Intent resultIntent = getIntent();
+                    int flags = PendingIntent.FLAG_CANCEL_CURRENT;
+                    // ONE_SHOT：      PendingIntent只使用一次；
+                    // CANCEL_CURRENT：PendingIntent執行前會先結束掉之前的
+                    // NO_CREATE：     沿用先前的PendingIntent，不建立新的PendingIntent；
+                    // UPDATE_CURRENT：更新先前PendingIntent所帶的額外資料，並繼續沿用
+                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, flags);
+
+                    builder.setSmallIcon(R.mipmap.ic_launcher)
+                            .setWhen(System.currentTimeMillis())
+                            .setContentTitle("物品可能遺失")
+                            .setContentText("您的物品可能已遺失，請留意")
+                            .setVibrate(new long[]{300, 100, 300, 10})
+                            .setSound(soundUri)
+                            .setAutoCancel(true)
+                            .setNumber(1)
+                            .setContentIntent(pendingIntent);
+                    NotificationManager mNotificationManager =
+                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+                    mNotificationManager.notify(1000, builder.build());
+                }
+            }
+            else if (Major == Config.MAJOR_LOCATION) {
+                if( PreviousMajor != Major || PreviousMinor != Minor ) {
+                    if (Minor == Config.MINOR1) {
+                        myLocation = Config.LOCATIONLABEL1;
+                    } else if (Minor == Config.MINOR2) {
+                        myLocation = Config.LOCATIONLABEL2;
+                    } else if (Minor == Config.MINOR3) {
+                        myLocation = Config.LOCATIONLABEL3;
+                    }
+                    if (myLocation != null) {
+                        locationRegions = mSails.findRegionByLabel(myLocation);
+                        try {
+                            ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
+                            ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
+                            serverHandler.sendToServer(ibeaconJSONObject);
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
+                    }
+
+                    if (myLocation != null) {
+                        rssiText.setText("當前位置 : " + myLocation);
+                        try {
+                            mSailsMapView.getMarkerManager().clear();
+                            mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+                            mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+                            mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+                        } catch (Exception e) {
+                            e.printStackTrace();
+                        }
                     }
                 }
-                if(serverHandler != null && serverHandler.isLogin())
-                    serverHandler.sendToServer(ibeaconJSONObject);
-
             }
             PreviousRssi = Rssi;
             PreviousMajor = Major;
             PreviousMinor = Minor;
-            if(myLocation != null){
-                rssiText.setText( "當前位置 : " + myLocation);
-                try {
-                    mSailsMapView.getMarkerManager().clear();
-                    mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-                    mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
-                    mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
-                } catch (Exception e){
-                    e.printStackTrace();
-                }
-
-            }
-
         }
     };
     public void guideToTarget(String targetLocation, int imageView){
@@ -715,4 +749,5 @@ public class MainActivity extends AppCompatActivity
         }
         mSailsMapView.getMarkerManager().clear();
     }
+
 }

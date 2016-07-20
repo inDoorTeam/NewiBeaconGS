@@ -15,8 +15,7 @@
         android:id="@+id/server_ip"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:inputType="numberDecimal"
         android:hint="Server IP"
-        />
+        android:inputType="text" />
 
 </LinearLayout>
