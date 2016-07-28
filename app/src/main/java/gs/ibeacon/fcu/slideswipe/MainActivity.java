@@ -611,8 +611,17 @@ public class MainActivity extends AppCompatActivity
             DLog.d(TAG, "scanRun");
 
             JSONObject ibeaconJSONObject = new JSONObject();
+            try {
+                ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_IS_MY_ITEM_OR_NOT);
+                ibeaconJSONObject.put(JSON.KEY_MINOR, Minor);
+                serverHandler.sendToServer(ibeaconJSONObject);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             if (Major == Config.MAJOR_ITEM) {
                 rssiText.setText("Item Rssi : " + Rssi);
+            }
+            if (Major == Config.MAJOR_ITEM && serverHandler.isMyItem()) {
 
                 if (myLocation != null) {
                     try {

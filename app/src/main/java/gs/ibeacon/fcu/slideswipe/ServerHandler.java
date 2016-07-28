@@ -35,6 +35,9 @@ public class ServerHandler {
     private Handler mHandler = new Handler();
     private static boolean isLogin = false;
     private static ServerHandler serverHandler = null;
+
+    private static boolean isMyItem = false;
+
     public static ServerHandler getInstance() {
         if(serverHandler == null || !isLogin)
             serverHandler = (new ServerHandler());
@@ -105,14 +108,14 @@ public class ServerHandler {
                                                 JSONArray friendLocationJSONArray = receiveObject.getJSONArray(JSON.KEY_FRIEND_LIST);
                                                 JSONArray otherUserJSONArray = receiveObject.getJSONArray(JSON.KEY_OTHERUSER_LIST);
 
-                                                for(int index = 0 ; index < friendLocationJSONArray.length() ; index ++){ // 好友
+                                                for (int index = 0; index < friendLocationJSONArray.length(); index++) { // 好友
                                                     String username = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME);
                                                     FriendFragment.friendListAdapter.add(Config.FRIEND_FACE_ICON + username);
                                                     FriendFragment.friendNameList.add(username);
                                                     String location = friendLocationJSONArray.getJSONObject(index).getString(JSON.KEY_LOCATION);
                                                     FriendFragment.friendLocList.add(location);
                                                 }
-                                                for(int index = 0 ; index < otherUserJSONArray.length() ; index ++){ // 非好友
+                                                for (int index = 0; index < otherUserJSONArray.length(); index++) { // 非好友
                                                     String username = otherUserJSONArray.getJSONObject(index).getString(JSON.KEY_USER_NAME);
                                                     FriendFragment.friendListAdapter.add(username);
                                                     FriendFragment.friendNameList.add(username);
@@ -254,6 +257,19 @@ public class ServerHandler {
                                         }
                                     });
                                     break;
+                                case JSON.STATE_RETURN_IS_OR_NOT_MY_ITEM:
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            isMyItem = false;
+                                            try {
+                                                isMyItem = receiveObject.getBoolean(JSON.KEY_IS_MY_ITEM_OR_NOT);
+                                            } catch (Exception e){
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    break;
                             }
                         }
                     }
@@ -281,5 +297,8 @@ public class ServerHandler {
     }
     public boolean isConnected(){
         return clientSocket.isConnected();
+    }
+    public boolean isMyItem() {
+        return isMyItem;
     }
 }
