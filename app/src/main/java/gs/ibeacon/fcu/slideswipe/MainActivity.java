@@ -632,7 +632,7 @@ public class MainActivity extends AppCompatActivity
                     NotificationCompat.Builder builder =
                             new NotificationCompat.Builder(MainActivity.this);
 
-                    Intent resultIntent = getIntent();
+                    Intent resultIntent = new Intent(MainActivity.this, PostLostItemActivity.class);
                     int flags = PendingIntent.FLAG_CANCEL_CURRENT;
                     // ONE_SHOT：      PendingIntent只使用一次；
                     // CANCEL_CURRENT：PendingIntent執行前會先結束掉之前的

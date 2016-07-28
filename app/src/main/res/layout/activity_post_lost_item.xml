@@ -1,0 +1,62 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#0099cc"
+    tools:context="gs.ibeacon.fcu.slideswipe.PostLostItemActivity">
+
+    <!-- The primary full-screen view. This can be replaced with whatever view
+         is needed to present your content, e.g. VideoView, SurfaceView,
+         TextureView, etc. -->
+
+    <!-- This FrameLayout insets its children based on system windows using
+         android:fitsSystemWindows. -->
+    <EditText
+        android:id="@+id/lostlocation"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:inputType="textVisiblePassword"
+        android:hint="location"
+        android:layout_alignParentTop="true"
+        android:layout_alignStart="@+id/cost" />
+
+    <EditText
+        android:id="@+id/losttime"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:inputType="textVisiblePassword"
+        android:hint="time"
+
+        android:layout_below="@+id/cost"
+        android:layout_alignStart="@+id/cost" />
+
+
+    <EditText
+        android:id="@+id/cost"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:inputType="textVisiblePassword"
+        android:hint="cost"
+
+        android:layout_below="@+id/lostlocation"
+        android:layout_alignStart="@+id/postbutton" />
+    <EditText
+        android:id="@+id/description"
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:inputType="textVisiblePassword"
+        android:hint="description"
+
+        android:layout_below="@+id/cost"
+        android:layout_alignStart="@+id/losttime"
+        android:layout_marginTop="69dp" />
+
+    <Button
+        android:layout_width="200dp"
+        android:layout_height="50dp"
+        android:text="發佈"
+        android:id="@+id/postbutton"
+        android:layout_marginBottom="48dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" />
+</RelativeLayout>

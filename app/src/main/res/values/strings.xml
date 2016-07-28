@@ -40,4 +40,8 @@
 
     <string name="action_share">Share</string>
     <string name="action_reply">Reply</string>
+
+    <string name="title_activity_post_lost_item">PostLostItemActivity</string>
+    <string name="dummy_button">Dummy Button</string>
+    <string name="dummy_content">DUMMY\nCONTENT</string>
 </resources>
