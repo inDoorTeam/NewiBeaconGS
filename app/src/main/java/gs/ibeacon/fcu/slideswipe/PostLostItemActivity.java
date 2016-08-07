@@ -1,6 +1,5 @@
 package gs.ibeacon.fcu.slideswipe;
 
-import android.location.Location;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
@@ -13,6 +12,7 @@ import org.json.JSONObject;
 import gs.ibeacon.fcu.slideswipe.JSON.JSON;
 
 public class PostLostItemActivity extends AppCompatActivity {
+    private EditText NameText;
     private EditText LocationText;
     private EditText TimeText;
     private EditText CostText;
@@ -24,7 +24,7 @@ public class PostLostItemActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_post_lost_item);
         PostButton = (Button) findViewById(R.id.postbutton);
-        LocationText = (EditText) findViewById(R.id.lostlocation);
+        NameText = (EditText) findViewById(R.id.lostname);
         TimeText = (EditText) findViewById(R.id.losttime);
         CostText = (EditText) findViewById(R.id.cost);
         DescriptionText = (EditText) findViewById(R.id.description);
@@ -35,7 +35,7 @@ public class PostLostItemActivity extends AppCompatActivity {
                 JSONObject LostItemJsonObject = new JSONObject();
                 try {
                     LostItemJsonObject.put(JSON.KEY_STATE, JSON.STATE_POST_ITEM);
-                    LostItemJsonObject.put(JSON.KEY_LOCATION, LocationText.getText());
+                    LostItemJsonObject.put(JSON.KEY_ITEM_NAME, NameText.getText());
                     LostItemJsonObject.put(JSON.KEY_LOST_TIME, TimeText.getText());
                     LostItemJsonObject.put(JSON.KEY_LOST_COST, CostText.getText());
                     LostItemJsonObject.put(JSON.KEY_LOST_DESCRIPTION, DescriptionText.getText());

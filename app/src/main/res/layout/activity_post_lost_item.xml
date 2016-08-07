@@ -12,13 +12,14 @@
     <!-- This FrameLayout insets its children based on system windows using
          android:fitsSystemWindows. -->
     <EditText
-        android:id="@+id/lostlocation"
+        android:id="@+id/lostname"
         android:layout_width="200dp"
         android:layout_height="50dp"
         android:inputType="textVisiblePassword"
-        android:hint="location"
+        android:hint="name"
         android:layout_alignParentTop="true"
-        android:layout_alignStart="@+id/cost" />
+        android:layout_alignStart="@+id/cost"
+        android:text="phone" />
 
     <EditText
         android:id="@+id/losttime"
@@ -28,7 +29,8 @@
         android:hint="time"
 
         android:layout_below="@+id/cost"
-        android:layout_alignStart="@+id/cost" />
+        android:layout_alignStart="@+id/cost"
+        android:text="2016/08/05" />
 
 
     <EditText
@@ -38,8 +40,9 @@
         android:inputType="textVisiblePassword"
         android:hint="cost"
 
-        android:layout_below="@+id/lostlocation"
-        android:layout_alignStart="@+id/postbutton" />
+        android:layout_below="@+id/lostname"
+        android:layout_alignStart="@+id/postbutton"
+        android:text="8000" />
     <EditText
         android:id="@+id/description"
         android:layout_width="200dp"
@@ -49,7 +52,8 @@
 
         android:layout_below="@+id/cost"
         android:layout_alignStart="@+id/losttime"
-        android:layout_marginTop="69dp" />
+        android:layout_marginTop="69dp"
+        android:text="手機" />
 
     <Button
         android:layout_width="200dp"

@@ -270,6 +270,43 @@ public class ServerHandler {
                                         }
                                     });
                                     break;
+                                case JSON.STATE_SEND_LOST_ITEM_LOCATION:
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try{
+                                                String lostItemLocation = receiveObject.getString(JSON.KEY_LOCATION);
+                                                final AlertDialog.Builder askLocationDialog = new AlertDialog.Builder(MainActivity.mainActivity);
+                                                askLocationDialog.setPositiveButton("好", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        try {
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                        dialog.dismiss();
+                                                    }
+                                                }).setNegativeButton("已經找到遺失物", new DialogInterface.OnClickListener() {
+                                                    @Override
+                                                    public void onClick(DialogInterface dialog, int which) {
+                                                        try {
+                                                            final JSONObject sendJSONObject = new JSONObject();
+                                                            sendJSONObject.put(JSON.KEY_STATE, JSON.STATE_FOUND_LOST_ITEM);
+                                                            sendJSONObject.put(JSON.KEY_MINOR, receiveObject.getInt(JSON.KEY_MINOR));
+                                                            ServerHandler.getInstance().sendToServer(sendJSONObject);
+                                                        } catch (Exception e) {
+                                                            e.printStackTrace();
+                                                        }
+                                                        dialog.dismiss();
+                                                    }
+                                                }).setMessage(lostItemLocation).setTitle("遺失位置").show();
+
+                                            } catch (JSONException e) {
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+                                    break;
                             }
                         }
                     }

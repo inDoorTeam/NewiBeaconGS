@@ -50,7 +50,8 @@ public class JSON {
     public static final int STATE_POST_ITEM = 13 ;
     public static final int STATE_IS_MY_ITEM_OR_NOT = 14;
     public static final int STATE_RETURN_IS_OR_NOT_MY_ITEM = 15;
-
+    public static final int STATE_SEND_LOST_ITEM_LOCATION = 16;
+    public static final int STATE_FOUND_LOST_ITEM = 17;
 
 
     public static final String MESSAGE_NOLOATION = "noLocation";
