@@ -665,35 +665,38 @@ public class MainActivity extends AppCompatActivity
                     mNotificationManager.notify(1000, builder.build());
                 }
             }
+
             else if (Major == Config.MAJOR_LOCATION) {
                 if( PreviousMajor != Major || PreviousMinor != Minor ) {
-                    if (Minor == Config.LOCATION_MINOR1) {
-                        myLocation = Config.LOCATIONLABEL1;
-                    } else if (Minor == Config.LOCATION_MINOR2) {
-                        myLocation = Config.LOCATIONLABEL2;
-                    } else if (Minor == Config.LOCATION_MINOR3) {
-                        myLocation = Config.LOCATIONLABEL3;
-                    }
-                    if (myLocation != null) {
-                        locationRegions = mSails.findRegionByLabel(myLocation);
-                        try {
-                            ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
-                            ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
-                            serverHandler.sendToServer(ibeaconJSONObject);
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                    if(Rssi > PreviousRssi) {
+                        if (Minor == Config.LOCATION_MINOR1) {
+                            myLocation = Config.LOCATIONLABEL1;
+                        } else if (Minor == Config.LOCATION_MINOR2) {
+                            myLocation = Config.LOCATIONLABEL2;
+                        } else if (Minor == Config.LOCATION_MINOR3) {
+                            myLocation = Config.LOCATIONLABEL3;
                         }
-                    }
+                        if (myLocation != null) {
+                            locationRegions = mSails.findRegionByLabel(myLocation);
+                            try {
+                                ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
+                                ibeaconJSONObject.put(JSON.KEY_LOCATION, myLocation);
+                                serverHandler.sendToServer(ibeaconJSONObject);
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
+                        }
 
-                    if (myLocation != null) {
-                        rssiText.setText("當前位置 : " + myLocation);
-                        try {
-                            mSailsMapView.getMarkerManager().clear();
-                            mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
-                            mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
-                            mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
-                        } catch (Exception e) {
-                            e.printStackTrace();
+                        if (myLocation != null) {
+                            rssiText.setText("當前位置 : " + myLocation);
+                            try {
+                                mSailsMapView.getMarkerManager().clear();
+                                mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
+                                mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+                                mSailsMapView.getRoutingManager().setStartMakerDrawable(Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     }
                 }
