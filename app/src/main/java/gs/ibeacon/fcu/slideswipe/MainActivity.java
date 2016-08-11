@@ -669,7 +669,7 @@ public class MainActivity extends AppCompatActivity
             else if (Major == Config.MAJOR_LOCATION) {
                 if( PreviousMajor != Major || PreviousMinor != Minor ) {
                     if(Rssi > PreviousRssi) {
-                        if (Minor == Config.LOCATION_MINOR1) {
+                       if (Minor == Config.LOCATION_MINOR1) {
                             myLocation = Config.LOCATIONLABEL1;
                         } else if (Minor == Config.LOCATION_MINOR2) {
                             myLocation = Config.LOCATIONLABEL2;
@@ -688,7 +688,7 @@ public class MainActivity extends AppCompatActivity
                         }
 
                         if (myLocation != null) {
-                            rssiText.setText("當前位置 : " + myLocation);
+                            rssiText.setText("當前位置 : " + myLocation + "Rssi : " + Rssi);
                             try {
                                 mSailsMapView.getMarkerManager().clear();
                                 mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
@@ -700,10 +700,10 @@ public class MainActivity extends AppCompatActivity
                         }
                     }
                 }
+                PreviousRssi = Rssi;
+                PreviousMajor = Major;
+                PreviousMinor = Minor;
             }
-            PreviousRssi = Rssi;
-            PreviousMajor = Major;
-            PreviousMinor = Minor;
         }
     };
     public void guideToTarget(String targetLocation, int imageView){

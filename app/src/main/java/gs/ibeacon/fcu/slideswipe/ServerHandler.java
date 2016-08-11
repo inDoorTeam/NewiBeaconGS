@@ -275,12 +275,13 @@ public class ServerHandler {
                                         @Override
                                         public void run() {
                                             try{
-                                                String lostItemLocation = receiveObject.getString(JSON.KEY_LOCATION);
+                                                final String lostItemLocation = receiveObject.getString(JSON.KEY_LOCATION);
                                                 final AlertDialog.Builder askLocationDialog = new AlertDialog.Builder(MainActivity.mainActivity);
                                                 askLocationDialog.setPositiveButton("好", new DialogInterface.OnClickListener() {
                                                     @Override
                                                     public void onClick(DialogInterface dialog, int which) {
                                                         try {
+                                                            MainActivity.mainActivity.guideToTarget(lostItemLocation, 3);
                                                         } catch (Exception e) {
                                                             e.printStackTrace();
                                                         }
