@@ -1,8 +1,15 @@
 package gs.ibeacon.fcu.slideswipe;
 
 import android.app.AlertDialog;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Handler;
+import android.support.v7.app.NotificationCompat;
 import android.widget.TextView;
 
 import org.json.JSONArray;
@@ -307,6 +314,42 @@ public class ServerHandler {
                                             }
                                         }
                                     });
+                                    break;
+                                case JSON.STATE_ITEM_RSSI_TOO_FAR:
+                                    mHandler.post(new Runnable() {
+                                        @Override
+                                        public void run() {
+                                            try {
+                                                final Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+                                                NotificationCompat.Builder builder =
+                                                        new NotificationCompat.Builder(MainActivity.mainActivity);
+
+                                                Intent resultIntent = new Intent(MainActivity.mainActivity, PostLostItemActivity.class);
+                                                int flags = PendingIntent.FLAG_CANCEL_CURRENT;
+                                                // ONE_SHOT：      PendingIntent只使用一次；
+                                                // CANCEL_CURRENT：PendingIntent執行前會先結束掉之前的
+                                                // NO_CREATE：     沿用先前的PendingIntent，不建立新的PendingIntent；
+                                                // UPDATE_CURRENT：更新先前PendingIntent所帶的額外資料，並繼續沿用
+                                                PendingIntent pendingIntent = PendingIntent.getActivity(MainActivity.mainActivity.getApplicationContext(), 0, resultIntent, flags);
+
+                                                builder.setSmallIcon(R.mipmap.ic_launcher)
+                                                        .setWhen(System.currentTimeMillis())
+                                                        .setContentTitle("物品可能遺失")
+                                                        .setContentText("您的物品可能已遺失，請留意")
+                                                        .setVibrate(new long[]{300, 100, 300, 10})
+                                                        .setSound(soundUri)
+                                                        .setAutoCancel(true)
+                                                        .setNumber(1)
+                                                        .setContentIntent(pendingIntent);
+                                                NotificationManager mNotificationManager =
+                                                        (NotificationManager) MainActivity.mainActivity.getSystemService(Context.NOTIFICATION_SERVICE);
+                                                mNotificationManager.notify(1000, builder.build());
+                                            } catch (Exception e){
+                                                e.printStackTrace();
+                                            }
+                                        }
+                                    });
+
                                     break;
                             }
                         }

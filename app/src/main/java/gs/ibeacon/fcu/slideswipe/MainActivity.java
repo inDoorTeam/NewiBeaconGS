@@ -623,7 +623,7 @@ public class MainActivity extends AppCompatActivity
             if (Major == Config.MAJOR_ITEM) {
                 rssiText.setText("Item Rssi : " + Rssi);
             }
-            if (Major == Config.MAJOR_ITEM /*&& serverHandler != null && serverHandler.isLogin() &&serverHandler.isMyItem()*/) {
+            if (Major == Config.MAJOR_ITEM) {
 
                 if (myLocation != null) {
                     try {
@@ -637,33 +637,6 @@ public class MainActivity extends AppCompatActivity
                     }
                 }
 
-
-                if(Rssi < -70) {
-                    final Uri soundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
-                    NotificationCompat.Builder builder =
-                            new NotificationCompat.Builder(MainActivity.this);
-
-                    Intent resultIntent = new Intent(MainActivity.this, PostLostItemActivity.class);
-                    int flags = PendingIntent.FLAG_CANCEL_CURRENT;
-                    // ONE_SHOT：      PendingIntent只使用一次；
-                    // CANCEL_CURRENT：PendingIntent執行前會先結束掉之前的
-                    // NO_CREATE：     沿用先前的PendingIntent，不建立新的PendingIntent；
-                    // UPDATE_CURRENT：更新先前PendingIntent所帶的額外資料，並繼續沿用
-                    PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 0, resultIntent, flags);
-
-                    builder.setSmallIcon(R.mipmap.ic_launcher)
-                            .setWhen(System.currentTimeMillis())
-                            .setContentTitle("物品可能遺失")
-                            .setContentText("您的物品可能已遺失，請留意")
-                            .setVibrate(new long[]{300, 100, 300, 10})
-                            .setSound(soundUri)
-                            .setAutoCancel(true)
-                            .setNumber(1)
-                            .setContentIntent(pendingIntent);
-                    NotificationManager mNotificationManager =
-                            (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-                    mNotificationManager.notify(1000, builder.build());
-                }
             }
 
             else if (Major == Config.MAJOR_LOCATION) {
