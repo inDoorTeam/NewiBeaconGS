@@ -17,6 +17,6 @@
         android:layout_height="wrap_content"
         android:hint="Server IP"
         android:digits="0123456789."
-        android:inputType="number" />
+        android:inputType="number|text" />
 
 </LinearLayout>
