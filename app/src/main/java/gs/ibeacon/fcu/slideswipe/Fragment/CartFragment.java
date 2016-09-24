@@ -1,18 +1,25 @@
 package gs.ibeacon.fcu.slideswipe.Fragment;
 
+import android.app.AlertDialog;
 import android.app.Fragment;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.support.v7.widget.Toolbar;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
 
+import com.sails.engine.LocationRegion;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.util.List;
 
 import gs.ibeacon.fcu.slideswipe.*;
 import gs.ibeacon.fcu.slideswipe.BlueTooth.BluetoothService;
@@ -46,8 +53,10 @@ public class CartFragment extends Fragment implements View.OnClickListener{
     private Button backwardutton = null;
     private Button stopButton = null;
     private Button guideToTargetButton = null;
+    private Button moveToTargetButton = null;
     private static TextView targetLocationText = null;
     private BluetoothService bluetoothService;
+    private AlertDialog.Builder locationListDialog;
     public CartFragment() {
         // Required empty public constructor
     }
@@ -93,13 +102,13 @@ public class CartFragment extends Fragment implements View.OnClickListener{
 
         targetLocationText = (TextView) v.findViewById(R.id.cartLocationText);
 
-
         rightButton = (Button) v.findViewById(R.id.btnR);
         leftButton = (Button) v.findViewById(R.id.btnL);
         forwardButton = (Button) v.findViewById(R.id.btnU);
         backwardutton = (Button) v.findViewById(R.id.btnD);
         stopButton = (Button) v.findViewById(R.id.btnS);
         guideToTargetButton = (Button) v.findViewById(R.id.guideToTargetButton);
+        moveToTargetButton = (Button) v.findViewById(R.id.moveToTargetButton);
 
         rightButton.setOnClickListener(this);
         leftButton.setOnClickListener(this);
@@ -107,6 +116,55 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         backwardutton.setOnClickListener(this);
         stopButton.setOnClickListener(this);
         guideToTargetButton.setOnClickListener(this);
+        moveToTargetButton.setOnClickListener(this);
+
+        final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
+        List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
+        try {
+            for (int i = 0; i < l.size(); i++) {
+                String newLocationl = l.get(i).label;
+                if (!newLocationl.equals("")) {
+                    locationListAdapter.add(newLocationl);
+                }
+            }
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+        locationListDialog = new AlertDialog.Builder(getActivity());
+        locationListDialog.setTitle("地點導引");
+        locationListDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                try {
+                    List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
+                    for (int i = 0; i < l.size(); i++) {
+                        String newLocationl = l.get(i).label;
+                        if (!newLocationl.equals("")) {
+                            locationListAdapter.add(newLocationl);
+                        }
+                    }
+                }
+                catch (Exception e){
+                    e.printStackTrace();
+                }
+                dialog.dismiss();
+            }
+        });
+        locationListDialog.setAdapter(locationListAdapter, new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                String moveLocation = locationListAdapter.getItem(which);
+                try {
+                    JSONObject TargetLocationJSONObject = new JSONObject();
+                    TargetLocationJSONObject.put(JSON.KEY_STATE, JSON.STATE_MOVE_TO_TARGET);
+                    TargetLocationJSONObject.put(JSON.KEY_MOVE_TO_TARGET_LOCATION, moveLocation);
+                    ServerHandler.getInstance().sendToServer(TargetLocationJSONObject);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+        });
 
         return v;
     }
@@ -170,6 +228,10 @@ public class CartFragment extends Fragment implements View.OnClickListener{
                             e.printStackTrace();
                         }
                     }
+                    break;
+                case R.id.moveToTargetButton:
+                    bluetoothService.writeData("LRL");
+                    //locationListDialog.show();
                     break;
             }
         }
