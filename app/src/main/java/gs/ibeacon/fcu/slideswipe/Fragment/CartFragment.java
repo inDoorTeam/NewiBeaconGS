@@ -120,34 +120,39 @@ public class CartFragment extends Fragment implements View.OnClickListener{
 
         final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
         List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
-        try {
-            for (int i = 0; i < l.size(); i++) {
-                String newLocationl = l.get(i).label;
-                if (!newLocationl.equals("")) {
-                    locationListAdapter.add(newLocationl);
-                }
-            }
-        }
-        catch (Exception e){
-            e.printStackTrace();
-        }
+        locationListAdapter.add("B");
+        locationListAdapter.add("C");
+        locationListAdapter.add("D");
+        locationListAdapter.add("E");
+        locationListAdapter.add("F");
+//        try {
+//            for (int i = 0; i < l.size(); i++) {
+//                String newLocationl = l.get(i).label;
+//                if (!newLocationl.equals("")) {
+//                    locationListAdapter.add(newLocationl);
+//                }
+//            }
+//        }
+//        catch (Exception e){
+//            e.printStackTrace();
+//        }
         locationListDialog = new AlertDialog.Builder(getActivity());
         locationListDialog.setTitle("地點導引");
         locationListDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-                try {
-                    List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
-                    for (int i = 0; i < l.size(); i++) {
-                        String newLocationl = l.get(i).label;
-                        if (!newLocationl.equals("")) {
-                            locationListAdapter.add(newLocationl);
-                        }
-                    }
-                }
-                catch (Exception e){
-                    e.printStackTrace();
-                }
+//                try {
+//                    List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
+//                    for (int i = 0; i < l.size(); i++) {
+//                        String newLocationl = l.get(i).label;
+//                        if (!newLocationl.equals("")) {
+//                            locationListAdapter.add(newLocationl);
+//                        }
+//                    }
+//                }
+//                catch (Exception e){
+//                    e.printStackTrace();
+//                }
                 dialog.dismiss();
             }
         });
@@ -214,24 +219,28 @@ public class CartFragment extends Fragment implements View.OnClickListener{
                     bluetoothService.writeData("s");
                     break;
                 case R.id.guideToTargetButton:
-                    DLog.d(TAG, "TargetButton");
-                    if (MainActivity.mainActivity.getBindingState()) {
-                        MainActivity.mainActivity.guideToTarget(targetLocation, 5);
-                        targetLocationText.setText("使用者位置 : " + targetLocation);
-                    } else {
-                        DLog.d(TAG, "TargetButton");
-                        try {
-                            JSONObject TargetLocationJSONObject = new JSONObject();
-                            TargetLocationJSONObject.put(JSON.KEY_STATE, JSON.STATE_FIND_TARGET_LOCATION);
-                            ServerHandler.getInstance().sendToServer(TargetLocationJSONObject);
-                        } catch (Exception e) {
-                            e.printStackTrace();
-                        }
-                    }
+                    locationListDialog.show();
+//                    DLog.d(TAG, "TargetButton");
+//                    if (MainActivity.mainActivity.getBindingState()) {
+//                        MainActivity.mainActivity.guideToTarget(targetLocation, 5);
+//                        targetLocationText.setText("使用者位置 : " + targetLocation);
+//                    } else {
+//                        DLog.d(TAG, "TargetButton");
+//                        try {
+//                            JSONObject TargetLocationJSONObject = new JSONObject();
+//                            TargetLocationJSONObject.put(JSON.KEY_STATE, JSON.STATE_FIND_TARGET_LOCATION);
+//                            ServerHandler.getInstance().sendToServer(TargetLocationJSONObject);
+//                        } catch (Exception e) {
+//                            e.printStackTrace();
+//                        }
+//                    }
                     break;
                 case R.id.moveToTargetButton:
-                    bluetoothService.writeData("LRL");
-                    //locationListDialog.show();
+                    //bluetoothService.writeData("LRRRRRRRRRRRRRRRR");
+                    JSONObject moveToTargetJSONObject = new JSONObject();
+                    moveToTargetJSONObject.put(JSON.KEY_STATE, JSON.STATE_MOVE_TO_TARGET);
+                    moveToTargetJSONObject.put(JSON.KEY_MOVE_TO_TARGET_LOCATION, "B");
+                    ServerHandler.getInstance().sendToServer(moveToTargetJSONObject);
                     break;
             }
         }
