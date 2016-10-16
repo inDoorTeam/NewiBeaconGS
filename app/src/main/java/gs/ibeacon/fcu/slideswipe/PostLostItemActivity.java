@@ -5,6 +5,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -44,6 +45,9 @@ public class PostLostItemActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
 
+                Toast.makeText(v.getContext(), "已傳送", Toast.LENGTH_LONG).show();
+
+                finish();
             }
 
         });

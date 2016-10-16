@@ -54,6 +54,7 @@ import org.altbeacon.beacon.BeaconManager;
 import org.altbeacon.beacon.BeaconParser;
 import org.altbeacon.beacon.RangeNotifier;
 import org.altbeacon.beacon.Region;
+import org.altbeacon.beacon.service.ArmaRssiFilter;
 import org.json.JSONObject;
 
 import java.util.Collection;
@@ -93,6 +94,7 @@ public class MainActivity extends AppCompatActivity
     private MaterialDialog msgLoadSuccess ;
 
     private BeaconManager beaconManager;
+    private ArmaRssiFilter armaRssiFilter = new ArmaRssiFilter();
     private String myLocation = null;
     private int Rssi, Major, Minor;
     public int PreviousRssi = -1000;
@@ -116,6 +118,8 @@ public class MainActivity extends AppCompatActivity
         setContentView(R.layout.activity_main);
 
         mainActivity = this;
+
+        armaRssiFilter.setDEFAULT_ARMA_SPEED(0.01D);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
@@ -584,13 +588,15 @@ public class MainActivity extends AppCompatActivity
         catch (RemoteException e) {
             e.printStackTrace();
         }
+
         beaconManager.setRangeNotifier(new RangeNotifier() {
             @Override
             public void didRangeBeaconsInRegion(Collection<Beacon> beacons, Region region) {
                 if (beacons.size() > 0) {
                     org.altbeacon.beacon.Beacon beacon = beacons.iterator().next();
-
-                    Rssi = beacon.getRssi();
+                    //Rssi = beacon.getRssi();
+                    armaRssiFilter.addMeasurement(beacon.getRssi());
+                    Rssi = (int)armaRssiFilter.calculateRssi();
                     Uuid = beacon.getId1().toUuidString();
                     Major = beacon.getId2().toInt();
                     Minor = beacon.getId3().toInt();
@@ -640,7 +646,7 @@ public class MainActivity extends AppCompatActivity
             }
 
             else if (Major == Config.MAJOR_LOCATION) {
-                if( PreviousMajor != Major || PreviousMinor != Minor ) {
+                if( PreviousMinor != Minor ) {
                     if(Rssi > PreviousRssi) {
                        if (Minor == Config.LOCATION_MINOR1) {
                             myLocation = Config.LOCATIONLABEL1;
