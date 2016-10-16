@@ -88,7 +88,7 @@ public class GuideFragment extends Fragment {
 
 
         final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
-        List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
+        List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("1");
         try {
             for (int i = 0; i < l.size(); i++) {
                 String newLocationl = l.get(i).label;
@@ -106,7 +106,7 @@ public class GuideFragment extends Fragment {
             @Override
             public void onClick(DialogInterface dialog, int which) {
                 try {
-                    List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
+                    List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("1");
                     for (int i = 0; i < l.size(); i++) {
                         String newLocationl = l.get(i).label;
                         if (!newLocationl.equals("")) {

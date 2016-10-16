@@ -499,7 +499,7 @@ public class MainActivity extends AppCompatActivity
         @Override
         public void run() {
             msgLoading.show();
-            mSails.loadCloudBuilding("ad8538700fd94717bbeda154b2a1c584", "5705e42055cce32e10002a2d", new SAILS.OnFinishCallback() {
+            mSails.loadCloudBuilding("ad8538700fd94717bbeda154b2a1c584", "58038d0908920f6b4b0008ec", new SAILS.OnFinishCallback() {
                 @Override
                 public void onSuccess(String response) {
                     runOnUiThread(new Runnable() {

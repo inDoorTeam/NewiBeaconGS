@@ -31,6 +31,8 @@ public class JSON {
     public static final String KEY_ITEM_LOCATION = "itemLocation";
     public static final String KEY_OTHER_USER_PERMISION = "是否允許請求所在位置";
     public static final String KEY_IS_MY_ITEM_OR_NOT = "";
+    public static final String KEY_MOVE_TO_TARGET_LOCATION = "movetargetLocation";
+    public static final String KEY_MOVE_TO_TARGET_PATH = "movetargetLocation";
 
 
     public static final String KEY_STATE = "STATE" ;
@@ -53,7 +55,8 @@ public class JSON {
     public static final int STATE_SEND_LOST_ITEM_LOCATION = 16;
     public static final int STATE_FOUND_LOST_ITEM = 17;
     public static final int STATE_ITEM_RSSI_TOO_FAR = 18;
-
+    public static final int STATE_MOVE_TO_TARGET = 19;
+    public static final int STATE_MOVE_TO_TARGET_PATH = 20;
 
 
     public static final String MESSAGE_NOLOATION = "noLocation";

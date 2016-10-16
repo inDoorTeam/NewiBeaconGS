@@ -42,6 +42,7 @@ public class ServerHandler {
     private Handler mHandler = new Handler();
     private static boolean isLogin = false;
     private static ServerHandler serverHandler = null;
+    private BluetoothService bluetoothService = BluetoothService.getInstance();
 
     private static boolean isMyItem = false;
 
@@ -356,6 +357,12 @@ public class ServerHandler {
                                             }
                                         }
                                     });
+
+                                    break;
+                                case JSON.STATE_MOVE_TO_TARGET_PATH:
+                                    String movePath = receiveObject.getString(JSON.KEY_MOVE_TO_TARGET_PATH);
+                                    DLog.d(TAG, movePath);
+                                    bluetoothService.writeData(movePath);
 
                                     break;
                             }
