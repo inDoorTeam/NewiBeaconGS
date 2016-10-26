@@ -119,12 +119,22 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         moveToTargetButton.setOnClickListener(this);
 
         final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
-        List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
-        locationListAdapter.add("B");
-        locationListAdapter.add("C");
-        locationListAdapter.add("D");
-        locationListAdapter.add("E");
-        locationListAdapter.add("F");
+        //List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("1");
+
+        locationListAdapter.add("入口");
+        locationListAdapter.add("麵包");
+        locationListAdapter.add("盥洗用品");
+        locationListAdapter.add("電腦");
+        locationListAdapter.add("化妝品");
+        locationListAdapter.add("電視&手機");
+        locationListAdapter.add("冷藏飲料");
+        locationListAdapter.add("生活用品B");
+        locationListAdapter.add("廚具&電風扇");
+        locationListAdapter.add("冰品");
+        locationListAdapter.add("餅乾");
+        locationListAdapter.add("調理食品");
+        locationListAdapter.add("沖泡飲品");
+
 //        try {
 //            for (int i = 0; i < l.size(); i++) {
 //                String newLocationl = l.get(i).label;
@@ -204,19 +214,19 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         try {
             switch (id) {
                 case R.id.btnU:
-                    bluetoothService.writeData("u");
+                    bluetoothService.writeData("F");
                     break;
                 case R.id.btnD:
-                    bluetoothService.writeData("d");
+                    bluetoothService.writeData("B");
                     break;
                 case R.id.btnL:
-                    bluetoothService.writeData("l");
+                    bluetoothService.writeData("L");
                     break;
                 case R.id.btnR:
-                    bluetoothService.writeData("r");
+                    bluetoothService.writeData("R");
                     break;
                 case R.id.btnS:
-                    bluetoothService.writeData("s");
+                    bluetoothService.writeData("S");
                     break;
                 case R.id.guideToTargetButton:
                     locationListDialog.show();
@@ -236,10 +246,9 @@ public class CartFragment extends Fragment implements View.OnClickListener{
 //                    }
                     break;
                 case R.id.moveToTargetButton:
-                    //bluetoothService.writeData("LRRRRRRRRRRRRRRRR");
                     JSONObject moveToTargetJSONObject = new JSONObject();
                     moveToTargetJSONObject.put(JSON.KEY_STATE, JSON.STATE_MOVE_TO_TARGET);
-                    moveToTargetJSONObject.put(JSON.KEY_MOVE_TO_TARGET_LOCATION, "B");
+                    moveToTargetJSONObject.put(JSON.KEY_MOVE_TO_TARGET_LOCATION, MainActivity.mainActivity.myLocation);
                     ServerHandler.getInstance().sendToServer(moveToTargetJSONObject);
                     break;
             }

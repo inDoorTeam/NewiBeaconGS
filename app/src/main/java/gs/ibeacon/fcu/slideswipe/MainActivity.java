@@ -93,7 +93,7 @@ public class MainActivity extends AppCompatActivity
     private MaterialDialog msgLoadSuccess ;
 
     private BeaconManager beaconManager;
-    private String myLocation = null;
+    public String myLocation = null;
     private int Rssi, Major, Minor;
     public int PreviousRssi = -1000;
     public int PreviousMajor = 0,PreviousMinor = 0;

@@ -19,8 +19,8 @@ public class Config {
     public static int LOCATION_MINOR3 = 251;
     public static int ITEM_MINOR1 = 253;
 
-    public static String LOCATIONLABEL1 = "資電201 - 資訊系辦公室";
-    public static String LOCATIONLABEL2 = "資電214";
-    public static String LOCATIONLABEL3 = "資電234 - 網際網路及軟體工程學程實驗室";
+    public static String LOCATIONLABEL1 = "生活用品B";
+    public static String LOCATIONLABEL2 = "調理食品";
+    public static String LOCATIONLABEL3 = "電視";
     public static String LOCATIONLABEL4 = "資電222 - 第三國際會議廳";
 }
