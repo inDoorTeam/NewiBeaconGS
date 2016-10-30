@@ -21,6 +21,6 @@ public class Config {
 
     public static String LOCATIONLABEL1 = "生活用品B";
     public static String LOCATIONLABEL2 = "調理食品";
-    public static String LOCATIONLABEL3 = "電視";
+    public static String LOCATIONLABEL3 = "麵包";
     public static String LOCATIONLABEL4 = "資電222 - 第三國際會議廳";
 }
