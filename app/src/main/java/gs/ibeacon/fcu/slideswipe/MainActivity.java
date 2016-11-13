@@ -648,6 +648,10 @@ public class MainActivity extends AppCompatActivity
                             myLocation = Config.LOCATIONLABEL2;
                         } else if (Minor == Config.LOCATION_MINOR3) {
                             myLocation = Config.LOCATIONLABEL3;
+                        } else if (Minor == Config.LOCATION_MINOR4) {
+                            myLocation = Config.LOCATIONLABEL4;
+                        } else if (Minor == Config.LOCATION_MINOR5) {
+                            myLocation = Config.LOCATIONLABEL5;
                         }
                         if (myLocation != null) {
                             locationRegions = mSails.findRegionByLabel(myLocation);
