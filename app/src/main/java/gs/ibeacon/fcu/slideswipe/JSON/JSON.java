@@ -57,6 +57,7 @@ public class JSON {
     public static final int STATE_ITEM_RSSI_TOO_FAR = 18;
     public static final int STATE_MOVE_TO_TARGET = 19;
     public static final int STATE_MOVE_TO_TARGET_PATH = 20;
+    public static final int STATE_AUTO_FOLLOW = 21;
 
 
     public static final String MESSAGE_NOLOATION = "noLocation";

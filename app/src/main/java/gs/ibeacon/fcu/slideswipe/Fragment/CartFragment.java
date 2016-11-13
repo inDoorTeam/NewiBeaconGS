@@ -47,13 +47,8 @@ public class CartFragment extends Fragment implements View.OnClickListener{
     private OnFragmentInteractionListener mListener;
 
     public static String targetLocation;
-    private Button leftButton = null;
-    private Button rightButton = null;
-    private Button forwardButton = null;
-    private Button backwardutton = null;
-    private Button stopButton = null;
-    private Button guideToTargetButton = null;
     private Button moveToTargetButton = null;
+    private Button autoFollowButton = null;
     private static TextView targetLocationText = null;
     private BluetoothService bluetoothService;
     private AlertDialog.Builder locationListDialog;
@@ -102,21 +97,11 @@ public class CartFragment extends Fragment implements View.OnClickListener{
 
         targetLocationText = (TextView) v.findViewById(R.id.cartLocationText);
 
-        rightButton = (Button) v.findViewById(R.id.btnR);
-        leftButton = (Button) v.findViewById(R.id.btnL);
-        forwardButton = (Button) v.findViewById(R.id.btnU);
-        backwardutton = (Button) v.findViewById(R.id.btnD);
-        stopButton = (Button) v.findViewById(R.id.btnS);
-        guideToTargetButton = (Button) v.findViewById(R.id.guideToTargetButton);
         moveToTargetButton = (Button) v.findViewById(R.id.moveToTargetButton);
+        autoFollowButton = (Button) v.findViewById(R.id.autoFollowButton);
 
-        rightButton.setOnClickListener(this);
-        leftButton.setOnClickListener(this);
-        forwardButton.setOnClickListener(this);
-        backwardutton.setOnClickListener(this);
-        stopButton.setOnClickListener(this);
-        guideToTargetButton.setOnClickListener(this);
         moveToTargetButton.setOnClickListener(this);
+        autoFollowButton.setOnClickListener(this);
 
         final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
         //List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("1");
@@ -135,34 +120,11 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         locationListAdapter.add("調理食品");
         locationListAdapter.add("沖泡飲品");
 
-//        try {
-//            for (int i = 0; i < l.size(); i++) {
-//                String newLocationl = l.get(i).label;
-//                if (!newLocationl.equals("")) {
-//                    locationListAdapter.add(newLocationl);
-//                }
-//            }
-//        }
-//        catch (Exception e){
-//            e.printStackTrace();
-//        }
         locationListDialog = new AlertDialog.Builder(getActivity());
         locationListDialog.setTitle("地點導引");
         locationListDialog.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int which) {
-//                try {
-//                    List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("2");
-//                    for (int i = 0; i < l.size(); i++) {
-//                        String newLocationl = l.get(i).label;
-//                        if (!newLocationl.equals("")) {
-//                            locationListAdapter.add(newLocationl);
-//                        }
-//                    }
-//                }
-//                catch (Exception e){
-//                    e.printStackTrace();
-//                }
                 dialog.dismiss();
             }
         });
@@ -213,43 +175,14 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         int id = v.getId();
         try {
             switch (id) {
-                case R.id.btnU:
-                    bluetoothService.writeData("F");
-                    break;
-                case R.id.btnD:
-                    bluetoothService.writeData("B");
-                    break;
-                case R.id.btnL:
-                    bluetoothService.writeData("L");
-                    break;
-                case R.id.btnR:
-                    bluetoothService.writeData("R");
-                    break;
-                case R.id.btnS:
-                    bluetoothService.writeData("S");
-                    break;
-                case R.id.guideToTargetButton:
-                    locationListDialog.show();
-//                    DLog.d(TAG, "TargetButton");
-//                    if (MainActivity.mainActivity.getBindingState()) {
-//                        MainActivity.mainActivity.guideToTarget(targetLocation, 5);
-//                        targetLocationText.setText("使用者位置 : " + targetLocation);
-//                    } else {
-//                        DLog.d(TAG, "TargetButton");
-//                        try {
-//                            JSONObject TargetLocationJSONObject = new JSONObject();
-//                            TargetLocationJSONObject.put(JSON.KEY_STATE, JSON.STATE_FIND_TARGET_LOCATION);
-//                            ServerHandler.getInstance().sendToServer(TargetLocationJSONObject);
-//                        } catch (Exception e) {
-//                            e.printStackTrace();
-//                        }
-//                    }
-                    break;
                 case R.id.moveToTargetButton:
-                    JSONObject moveToTargetJSONObject = new JSONObject();
-                    moveToTargetJSONObject.put(JSON.KEY_STATE, JSON.STATE_MOVE_TO_TARGET);
-                    moveToTargetJSONObject.put(JSON.KEY_MOVE_TO_TARGET_LOCATION, MainActivity.mainActivity.myLocation);
-                    ServerHandler.getInstance().sendToServer(moveToTargetJSONObject);
+                    locationListDialog.show();
+
+                    break;
+                case R.id.autoFollowButton:
+                    JSONObject autoFollowJSONObject = new JSONObject();
+                    autoFollowJSONObject.put(JSON.KEY_STATE, JSON.STATE_AUTO_FOLLOW);
+                    ServerHandler.getInstance().sendToServer(autoFollowJSONObject);
                     break;
             }
         }

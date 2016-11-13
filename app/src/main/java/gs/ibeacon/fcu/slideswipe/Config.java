@@ -17,10 +17,13 @@ public class Config {
     public static int LOCATION_MINOR1 = 249;
     public static int LOCATION_MINOR2 = 250;
     public static int LOCATION_MINOR3 = 251;
+    public static int LOCATION_MINOR4 = 247;
+    public static int LOCATION_MINOR5 = 248;
     public static int ITEM_MINOR1 = 253;
 
     public static String LOCATIONLABEL1 = "生活用品B";
     public static String LOCATIONLABEL2 = "調理食品";
-    public static String LOCATIONLABEL3 = "電視";
-    public static String LOCATIONLABEL4 = "資電222 - 第三國際會議廳";
+    public static String LOCATIONLABEL3 = "麵包";
+    public static String LOCATIONLABEL4 = "冰品";
+    public static String LOCATIONLABEL5 = "入口";
 }
