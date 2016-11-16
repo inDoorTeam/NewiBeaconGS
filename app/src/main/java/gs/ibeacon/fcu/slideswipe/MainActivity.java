@@ -628,10 +628,7 @@ public class MainActivity extends AppCompatActivity
             */
             if (Major == Config.MAJOR_ITEM) {
                 rssiText.setText("Item Rssi : " + Rssi);
-            }
-            if (Major == Config.MAJOR_ITEM) {
-
-                if (myLocation != null) {
+                if (myLocation != null && serverHandler != null && serverHandler.isLogin()) {
                     try {
                         ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_ITEM_IBEACON);
                         ibeaconJSONObject.put(JSON.KEY_RSSI, Rssi);
@@ -648,15 +645,19 @@ public class MainActivity extends AppCompatActivity
             else if (Major == Config.MAJOR_LOCATION) {
                 if( PreviousMinor != Minor ) {
                     if(Rssi > PreviousRssi) {
-                       if (Minor == Config.LOCATION_MINOR1) {
-                            myLocation = Config.LOCATIONLABEL1;
-                        } else if (Minor == Config.LOCATION_MINOR2) {
+                        if (Minor == Config.LOCATION_MINOR1) {
+                           myLocation = Config.LOCATIONLABEL1;
+                        }
+                        else if (Minor == Config.LOCATION_MINOR2) {
                             myLocation = Config.LOCATIONLABEL2;
-                        } else if (Minor == Config.LOCATION_MINOR3) {
+                        }
+                        else if (Minor == Config.LOCATION_MINOR3) {
                             myLocation = Config.LOCATIONLABEL3;
-                        } else if (Minor == Config.LOCATION_MINOR4) {
+                        }
+                        else if (Minor == Config.LOCATION_MINOR4) {
                             myLocation = Config.LOCATIONLABEL4;
-                        } else if (Minor == Config.LOCATION_MINOR5) {
+                        }
+                        else if (Minor == Config.LOCATION_MINOR5) {
                             myLocation = Config.LOCATIONLABEL5;
                         }
                         if (myLocation != null) {
@@ -757,6 +758,7 @@ public class MainActivity extends AppCompatActivity
             e.printStackTrace();
         }
         mSailsMapView.getMarkerManager().clear();
+
     }
 
 }
