@@ -32,11 +32,15 @@
         </activity>
         <activity
             android:name=".BlueTooth.DeviceListActivity"
+
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/select_device"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.Material.Light.Dialog" />
-        <activity android:name=".PostLostItemActivity"></activity>
+        <activity android:name=".PostLostItemActivity"
+            android:parentActivityName=".MainActivity">
+
+        </activity>
     </application>
 
 </manifest>

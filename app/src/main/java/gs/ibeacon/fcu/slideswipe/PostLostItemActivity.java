@@ -1,7 +1,10 @@
 package gs.ibeacon.fcu.slideswipe;
 
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
+import android.text.Html;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,33 +16,41 @@ import org.json.JSONObject;
 import gs.ibeacon.fcu.slideswipe.JSON.JSON;
 
 public class PostLostItemActivity extends AppCompatActivity {
-    private EditText NameText;
+    private EditText nameText;
     private EditText LocationText;
-    private EditText TimeText;
-    private EditText CostText;
-    private EditText DescriptionText;
-    private Button PostButton;
+    private EditText timeText;
+    private EditText costText;
+    private EditText descriptionText;
+    private Button postButton;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
+        ActionBar actionBar = getSupportActionBar();
+//        actionBar.setDisplayHomeAsUpEnabled(true);
+        actionBar.setDisplayOptions(ActionBar.DISPLAY_SHOW_HOME | ActionBar.DISPLAY_SHOW_TITLE | ActionBar.DISPLAY_HOME_AS_UP);
+        actionBar.setIcon(R.mipmap.ic_launcher);
+        getWindow().setStatusBarColor(getResources().getColor(R.color.toolbarU));
+        actionBar.setTitle(Html.fromHtml("<font color='#00FFCC'>智慧導引</font>"));
         setContentView(R.layout.activity_post_lost_item);
-        PostButton = (Button) findViewById(R.id.postbutton);
-        NameText = (EditText) findViewById(R.id.lostname);
-        TimeText = (EditText) findViewById(R.id.losttime);
-        CostText = (EditText) findViewById(R.id.cost);
-        DescriptionText = (EditText) findViewById(R.id.description);
+        nameText = (EditText) findViewById(R.id.lostNameText);
+        timeText = (EditText) findViewById(R.id.lostTimeText);
+        costText = (EditText) findViewById(R.id.costText);
+        descriptionText = (EditText) findViewById(R.id.descriptText);
+        postButton = (Button) findViewById(R.id.postButton);
 
-        PostButton.setOnClickListener(new View.OnClickListener() {
+        postButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 JSONObject LostItemJsonObject = new JSONObject();
                 try {
                     LostItemJsonObject.put(JSON.KEY_STATE, JSON.STATE_POST_ITEM);
-                    LostItemJsonObject.put(JSON.KEY_ITEM_NAME, NameText.getText());
-                    LostItemJsonObject.put(JSON.KEY_LOST_TIME, TimeText.getText());
-                    LostItemJsonObject.put(JSON.KEY_LOST_COST, CostText.getText());
-                    LostItemJsonObject.put(JSON.KEY_LOST_DESCRIPTION, DescriptionText.getText());
+                    LostItemJsonObject.put(JSON.KEY_ITEM_NAME, nameText.getText());
+                    LostItemJsonObject.put(JSON.KEY_LOST_TIME, timeText.getText());
+                    LostItemJsonObject.put(JSON.KEY_LOST_COST, costText.getText());
+                    LostItemJsonObject.put(JSON.KEY_LOST_DESCRIPTION, descriptionText.getText());
                     ServerHandler.getInstance().sendToServer(LostItemJsonObject);
                 } catch (JSONException e) {
                     e.printStackTrace();

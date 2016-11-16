@@ -25,6 +25,7 @@ import gs.ibeacon.fcu.slideswipe.*;
 import gs.ibeacon.fcu.slideswipe.BlueTooth.BluetoothService;
 import gs.ibeacon.fcu.slideswipe.JSON.JSON;
 import gs.ibeacon.fcu.slideswipe.Log.DLog;
+import me.drakeet.materialdialog.MaterialDialog;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -43,9 +44,9 @@ public class CartFragment extends Fragment implements View.OnClickListener{
     // TODO: Rename and change types of parameters
     private String mParam1;
     private String mParam2;
-
+    private boolean isFollowing = false;
     private OnFragmentInteractionListener mListener;
-
+    private MaterialDialog msgLoadSuccess;
     public static String targetLocation;
     private Button moveToTargetButton = null;
     private Button autoFollowButton = null;
@@ -85,6 +86,7 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         Toolbar toolbar = (Toolbar) getActivity().findViewById(R.id.toolbar);
         toolbar.setSubtitle(R.string.title_cart);
         bluetoothService = BluetoothService.getInstance();
+
     }
 
     @Override
@@ -183,6 +185,11 @@ public class CartFragment extends Fragment implements View.OnClickListener{
                     JSONObject autoFollowJSONObject = new JSONObject();
                     autoFollowJSONObject.put(JSON.KEY_STATE, JSON.STATE_AUTO_FOLLOW);
                     ServerHandler.getInstance().sendToServer(autoFollowJSONObject);
+                    isFollowing = !isFollowing;
+                    if(isFollowing)
+                        autoFollowButton.setText("跟隨中");
+                    else
+                        autoFollowButton.setText("自動跟隨");
                     break;
             }
         }
