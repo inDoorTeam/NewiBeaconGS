@@ -99,6 +99,7 @@ public class MainActivity extends AppCompatActivity
     private int Rssi, Major, Minor;
     public int PreviousRssi = -1000;
     public int PreviousMajor = 0,PreviousMinor = 0;
+    public String previouseMyLocation = "";
     private List<LocationRegion> locationRegions = null;
     private Handler mHandler;
     private String Uuid = null;
@@ -660,7 +661,7 @@ public class MainActivity extends AppCompatActivity
                         else if (Minor == Config.LOCATION_MINOR5) {
                             myLocation = Config.LOCATIONLABEL5;
                         }
-                        if (myLocation != null) {
+                        if (myLocation != null && !previouseMyLocation.equals(myLocation)) {
                             locationRegions = mSails.findRegionByLabel(myLocation);
                             try {
                                 ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_SEND_IBEACON);
@@ -687,6 +688,7 @@ public class MainActivity extends AppCompatActivity
                 PreviousRssi = Rssi;
                 PreviousMajor = Major;
                 PreviousMinor = Minor;
+                previouseMyLocation = myLocation;
             }
         }
     };

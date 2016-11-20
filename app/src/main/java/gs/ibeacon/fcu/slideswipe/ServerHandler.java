@@ -175,10 +175,6 @@ public class ServerHandler {
                                     mHandler.post(new Runnable() {
                                         @Override
                                         public void run() {
-                                            BluetoothService bluetoothService = BluetoothService.getInstance();
-                                            if(bluetoothService != null && bluetoothService.isConnected()){
-                                                bluetoothService.writeData("r");
-                                            }
                                             String userLocation = null;
                                             try {
                                                 userLocation = receiveObject.getString(JSON.KEY_TARGET_LOCATION);
