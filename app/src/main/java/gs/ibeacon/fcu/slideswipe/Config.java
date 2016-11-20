@@ -21,8 +21,8 @@ public class Config {
     public static int LOCATION_MINOR5 = 248;
     public static int ITEM_MINOR1 = 253;
 
-    public static String LOCATIONLABEL1 = "生活用品B";
-    public static String LOCATIONLABEL2 = "調理食品";
+    public static String LOCATIONLABEL1 = "生活用品A";
+    public static String LOCATIONLABEL2 = "餅乾";
     public static String LOCATIONLABEL3 = "麵包";
     public static String LOCATIONLABEL4 = "冰品";
     public static String LOCATIONLABEL5 = "入口";

@@ -108,18 +108,27 @@ public class CartFragment extends Fragment implements View.OnClickListener{
         final ArrayAdapter<String> locationListAdapter = new ArrayAdapter<String>(getActivity(), android.R.layout.simple_selectable_list_item);
         //List<LocationRegion> l = MainActivity.mainActivity.getSails().getLocationRegionList("1");
 
+//        locationListAdapter.add("入口");
+//        locationListAdapter.add("麵包");
+//        locationListAdapter.add("盥洗用品");
+//        locationListAdapter.add("電腦");
+//        locationListAdapter.add("化妝品");
+//        locationListAdapter.add("電視&手機");
+//        locationListAdapter.add("冷藏飲料");
+//        locationListAdapter.add("生活用品B");
+//        locationListAdapter.add("廚具&電風扇");
+//        locationListAdapter.add("冰品");
+//        locationListAdapter.add("餅乾");
+//        locationListAdapter.add("調理食品");
+//        locationListAdapter.add("沖泡飲品");
+
         locationListAdapter.add("入口");
         locationListAdapter.add("麵包");
-        locationListAdapter.add("盥洗用品");
-        locationListAdapter.add("電腦");
-        locationListAdapter.add("化妝品");
-        locationListAdapter.add("電視&手機");
         locationListAdapter.add("冷藏飲料");
-        locationListAdapter.add("生活用品B");
-        locationListAdapter.add("廚具&電風扇");
+        locationListAdapter.add("化妝品");
         locationListAdapter.add("冰品");
+        locationListAdapter.add("生活用品A");
         locationListAdapter.add("餅乾");
-        locationListAdapter.add("調理食品");
         locationListAdapter.add("沖泡飲品");
 
         locationListDialog = new AlertDialog.Builder(getActivity());
