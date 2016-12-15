@@ -99,7 +99,7 @@ public class MainActivity extends AppCompatActivity
     private int Rssi, Major, Minor;
     public int PreviousRssi = -1000;
     public int PreviousMajor = 0,PreviousMinor = 0;
-    public String previouseMyLocation = "";
+    public String previouseMyLocation = null;
     private List<LocationRegion> locationRegions = null;
     private Handler mHandler;
     private String Uuid = null;
@@ -595,9 +595,9 @@ public class MainActivity extends AppCompatActivity
                 if (beacons.size() > 0) {
                     org.altbeacon.beacon.Beacon beacon = beacons.iterator().next();
 
-                    //Rssi = beacon.getRssi();
-                    armaRssiFilter.addMeasurement(beacon.getRssi());
-                    Rssi = (int)armaRssiFilter.calculateRssi();
+                    //armaRssiFilter.addMeasurement(beacon.getRssi());
+                    //Rssi = (int)armaRssiFilter.calculateRssi();
+                    Rssi = beacon.getRssi();
                     Uuid = beacon.getId1().toUuidString();
                     Major = beacon.getId2().toInt();
                     Minor = beacon.getId3().toInt();
@@ -618,15 +618,7 @@ public class MainActivity extends AppCompatActivity
             DLog.d(TAG, "scanRun");
 
             JSONObject ibeaconJSONObject = new JSONObject();
-            /*
-            try {
-                ibeaconJSONObject.put(JSON.KEY_STATE, JSON.STATE_IS_MY_ITEM_OR_NOT);
-                ibeaconJSONObject.put(JSON.KEY_MINOR, Minor);
-                serverHandler.sendToServer(ibeaconJSONObject);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            */
+
             if (Major == Config.MAJOR_ITEM) {
                 rssiText.setText("Item Rssi : " + Rssi);
                 if (myLocation != null && serverHandler != null && serverHandler.isLogin()) {
@@ -645,20 +637,30 @@ public class MainActivity extends AppCompatActivity
 
             else if (Major == Config.MAJOR_LOCATION) {
                 if( PreviousMinor != Minor ) {
-                    if(Rssi > PreviousRssi) {
+                    if(myLocation == null && previouseMyLocation == null){
                         if (Minor == Config.LOCATION_MINOR1) {
-                           myLocation = Config.LOCATIONLABEL1;
-                        }
-                        else if (Minor == Config.LOCATION_MINOR2) {
+                            myLocation = Config.LOCATIONLABEL1;
+                        } else if (Minor == Config.LOCATION_MINOR2) {
                             myLocation = Config.LOCATIONLABEL2;
-                        }
-                        else if (Minor == Config.LOCATION_MINOR3) {
+                        } else if (Minor == Config.LOCATION_MINOR3) {
                             myLocation = Config.LOCATIONLABEL3;
-                        }
-                        else if (Minor == Config.LOCATION_MINOR4) {
+                        } else if (Minor == Config.LOCATION_MINOR4) {
                             myLocation = Config.LOCATIONLABEL4;
+                        } else if (Minor == Config.LOCATION_MINOR5) {
+                            myLocation = Config.LOCATIONLABEL5;
                         }
-                        else if (Minor == Config.LOCATION_MINOR5) {
+                        previouseMyLocation = "";
+                    }
+                    if(Rssi - PreviousRssi > 15 && Rssi > -50 && PreviousRssi < -60) {
+                        if (Minor == Config.LOCATION_MINOR1) {
+                            myLocation = Config.LOCATIONLABEL1;
+                        } else if (Minor == Config.LOCATION_MINOR2) {
+                            myLocation = Config.LOCATIONLABEL2;
+                        } else if (Minor == Config.LOCATION_MINOR3) {
+                            myLocation = Config.LOCATIONLABEL3;
+                        } else if (Minor == Config.LOCATION_MINOR4) {
+                            myLocation = Config.LOCATIONLABEL4;
+                        } else if (Minor == Config.LOCATION_MINOR5) {
                             myLocation = Config.LOCATIONLABEL5;
                         }
                         if (myLocation != null && !previouseMyLocation.equals(myLocation)) {
@@ -673,8 +675,9 @@ public class MainActivity extends AppCompatActivity
                         }
 
                         if (myLocation != null) {
-                            rssiText.setText("當前位置 : " + myLocation + "Rssi : " + Rssi);
+                            //rssiText.setText("當前位置 : " + myLocation + "Rssi : " + Rssi);
                             try {
+                                locationRegions = mSails.findRegionByLabel(myLocation);//////
                                 mSailsMapView.getMarkerManager().clear();
                                 mSailsMapView.getRoutingManager().setStartRegion(locationRegions.get(0));
                                 mSailsMapView.getMarkerManager().setLocationRegionMarker(locationRegions.get(0), Marker.boundCenter(getResources().getDrawable(R.drawable.ic_start_blue_point)));
@@ -683,13 +686,15 @@ public class MainActivity extends AppCompatActivity
                                 e.printStackTrace();
                             }
                         }
-                    }
-                }
+
+                    }//end-if(Rssi - PreviousRssi > 15 && Rssi >  -50 && PreviousRssi < -60)
+                }//end-if( PreviousMinor != Minor )
                 PreviousRssi = Rssi;
                 PreviousMajor = Major;
                 PreviousMinor = Minor;
                 previouseMyLocation = myLocation;
-            }
+                rssiText.setText("當前位置 : " + myLocation + "Rssi : " + Rssi);
+            }//end-else if (Major == Config.MAJOR_LOCATION)
         }
     };
     public void guideToTarget(String targetLocation, int imageView){
